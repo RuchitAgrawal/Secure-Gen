@@ -1,0 +1,124 @@
+.root {
+  min-height: 100vh;
+  background-color: var(--color-canvas);
+}
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: 64px;
+  background-color: var(--color-canvas);
+  border-bottom: 1px solid var(--color-hairline);
+}
+
+.navInner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--spacing-xl);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xl);
+}
+
+.wordmark {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-ink);
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.spike {
+  color: var(--color-ink);
+  display: flex;
+  align-items: center;
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xxs);
+  flex: 1;
+}
+
+.navLink {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-muted);
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: var(--rounded-md);
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+  white-space: nowrap;
+}
+
+.navLink:hover {
+  color: var(--color-ink);
+  background-color: var(--color-surface-soft);
+  opacity: 1;
+}
+
+.navLinkActive {
+  color: var(--color-ink);
+  background-color: var(--color-surface-card);
+}
+
+.navActions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
+.githubLink {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-muted);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.githubLink:hover {
+  color: var(--color-ink);
+  opacity: 1;
+}
+
+.ctaButton {
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 20px;
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: var(--rounded-md);
+  text-decoration: none;
+  transition: background-color var(--transition-fast);
+}
+
+.ctaButton:hover {
+  background-color: var(--color-primary-active);
+  opacity: 1;
+}
+
+.main {
+  min-height: calc(100vh - 64px);
+}
+
+@media (max-width: 768px) {
+  .navLinks {
+    display: none;
+  }
+
+  .navInner {
+    padding: 0 var(--spacing-md);
+  }
+}
