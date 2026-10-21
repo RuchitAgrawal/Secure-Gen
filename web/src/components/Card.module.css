@@ -1,0 +1,23 @@
+.card {
+  border-radius: var(--rounded-lg);
+  overflow: hidden;
+}
+
+.pad-sm { padding: var(--spacing-lg); }
+.pad-md { padding: var(--spacing-xl); }
+.pad-lg { padding: var(--spacing-xl); }
+
+.cream {
+  background-color: var(--color-surface-card);
+  border: 1px solid var(--color-hairline);
+}
+
+.dark {
+  background-color: var(--color-surface-dark);
+  border: none;
+}
+
+.coral {
+  background-color: var(--color-primary);
+  border: none;
+}
