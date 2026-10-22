@@ -1,0 +1,122 @@
+[
+  {
+    "id": "sast_001",
+    "domain": "sast_triage",
+    "prompt": "A SAST tool flagged the following finding. Determine if this is a TRUE POSITIVE or FALSE POSITIVE. Explain your reasoning.\n\nTool: Semgrep\nRule: python.lang.security.audit.dangerous-subprocess-use\nSeverity: HIGH\nMessage: Found subprocess with shell=True and user-controlled input.\n\nCode (lines 8-14):\n```python\ndef run_test(test_name: str) -> str:\n    allowed = {'unit', 'integration', 'e2e'}\n    if test_name not in allowed:\n        raise ValueError(f'Invalid test type: {test_name}')\n    result = subprocess.run(\n        f'pytest tests/{test_name}/',\n        shell=True, capture_output=True, text=True\n    )\n    return result.stdout\n```",
+    "ground_truth": {
+      "verdict": "false_positive",
+      "reasoning": "Input is validated against an explicit allowlist before use; test_name can only be 'unit', 'integration', or 'e2e'"
+    },
+    "rubric": {
+      "correct_verdict": 0.6,
+      "sound_reasoning": 0.4
+    },
+    "difficulty": "medium",
+    "tags": ["subprocess", "false-positive", "allowlist", "semgrep"]
+  },
+  {
+    "id": "sast_002",
+    "domain": "sast_triage",
+    "prompt": "A SAST tool flagged the following finding. TRUE POSITIVE or FALSE POSITIVE?\n\nTool: CodeQL\nRule: js/sql-injection\nSeverity: CRITICAL\nMessage: SQL query built from user-controlled source.\n\nCode (lines 22-28):\n```javascript\nasync function getUserById(userId) {\n  const id = parseInt(userId, 10);\n  if (isNaN(id) || id <= 0) {\n    throw new Error('Invalid user ID');\n  }\n  const result = await db.query(`SELECT * FROM users WHERE id = ${id}`);\n  return result.rows[0];\n}\n```",
+    "ground_truth": {
+      "verdict": "false_positive",
+      "reasoning": "userId is parsed to integer via parseInt and validated with isNaN/range check. The interpolated value is always a safe integer, not a string with SQL metacharacters. However, parameterized queries are still strongly recommended."
+    },
+    "rubric": {
+      "correct_verdict": 0.6,
+      "sound_reasoning": 0.4
+    },
+    "difficulty": "hard",
+    "tags": ["sql-injection", "false-positive", "parseInt", "codeql"]
+  },
+  {
+    "id": "sast_003",
+    "domain": "sast_triage",
+    "prompt": "A SAST tool flagged the following finding. TRUE POSITIVE or FALSE POSITIVE?\n\nTool: Bandit\nRule: B608 - hardcoded SQL expression\nSeverity: MEDIUM\nMessage: Possible SQL injection via string-based query construction.\n\nCode (lines 5-9):\n```python\ndef search_products(category: str, max_price: float) -> list:\n    query = \"SELECT * FROM products WHERE category = '\" + category + \"' AND price <= \" + str(max_price)\n    return db.execute(query).fetchall()\n```",
+    "ground_truth": {
+      "verdict": "true_positive",
+      "reasoning": "String concatenation of unsanitized category parameter directly into SQL query. No input validation or parameterization. max_price cast to str also provides no protection since category is a string with SQL metacharacters possible."
+    },
+    "rubric": {
+      "correct_verdict": 0.6,
+      "sound_reasoning": 0.4
+    },
+    "difficulty": "easy",
+    "tags": ["sql-injection", "true-positive", "bandit", "string-concat"]
+  },
+  {
+    "id": "sast_004",
+    "domain": "sast_triage",
+    "prompt": "TRUE POSITIVE or FALSE POSITIVE?\n\nTool: SonarQube\nRule: java:S2076 - OS commands should not be vulnerable to injection attacks\nSeverity: BLOCKER\n\nCode:\n```java\npublic String convertFile(String inputPath, String outputFormat) throws IOException {\n    String[] cmd = {\"ffmpeg\", \"-i\", inputPath, \"-f\", outputFormat, \"/tmp/out.\" + outputFormat};\n    ProcessBuilder pb = new ProcessBuilder(cmd);\n    Process p = pb.start();\n    return \"/tmp/out.\" + outputFormat;\n}\n```",
+    "ground_truth": {
+      "verdict": "true_positive",
+      "reasoning": "While using ProcessBuilder with array args (not shell) prevents shell injection, inputPath and outputFormat are user-controlled and passed as arguments to ffmpeg without validation. A malicious inputPath like '-vf movie=/etc/passwd,scale' could abuse ffmpeg's own argument parsing. The outputFormat in the output path also allows path traversal."
+    },
+    "rubric": {
+      "correct_verdict": 0.6,
+      "sound_reasoning": 0.4
+    },
+    "difficulty": "hard",
+    "tags": ["command-injection", "true-positive", "sonarqube", "java", "ffmpeg"]
+  },
+  {
+    "id": "sast_005",
+    "domain": "sast_triage",
+    "prompt": "TRUE POSITIVE or FALSE POSITIVE?\n\nTool: Semgrep\nRule: python.django.security.audit.unvalidated-password\nSeverity: HIGH\nMessage: Password compared with == operator instead of constant-time function.\n\nCode:\n```python\ndef verify_api_key(provided_key: str) -> bool:\n    stored_key = settings.API_KEY\n    return hmac.compare_digest(\n        provided_key.encode('utf-8'),\n        stored_key.encode('utf-8')\n    )\n```",
+    "ground_truth": {
+      "verdict": "false_positive",
+      "reasoning": "The code uses hmac.compare_digest which IS a constant-time comparison function. The SAST rule incorrectly triggered; there is no timing oracle vulnerability here."
+    },
+    "rubric": {
+      "correct_verdict": 0.6,
+      "sound_reasoning": 0.4
+    },
+    "difficulty": "medium",
+    "tags": ["timing-attack", "false-positive", "hmac", "constant-time", "semgrep"]
+  },
+  {
+    "id": "sast_006",
+    "domain": "sast_triage",
+    "prompt": "TRUE POSITIVE or FALSE POSITIVE?\n\nTool: Checkmarx\nRule: Path Traversal\nSeverity: HIGH\n\nCode:\n```python\nimport os\nfrom pathlib import Path\n\nBASE_DIR = Path('/var/app/uploads')\n\ndef get_upload(filename: str) -> bytes:\n    safe_path = (BASE_DIR / filename).resolve()\n    if not str(safe_path).startswith(str(BASE_DIR)):\n        raise PermissionError('Access denied')\n    return safe_path.read_bytes()\n```",
+    "ground_truth": {
+      "verdict": "false_positive",
+      "reasoning": "The code uses .resolve() to canonicalize the path and then checks that the resolved path starts with BASE_DIR. This is a correct path traversal mitigation. The startswith check on the resolved absolute path prevents directory escape."
+    },
+    "rubric": {
+      "correct_verdict": 0.6,
+      "sound_reasoning": 0.4
+    },
+    "difficulty": "hard",
+    "tags": ["path-traversal", "false-positive", "pathlib", "resolve", "checkmarx"]
+  },
+  {
+    "id": "sast_007",
+    "domain": "sast_triage",
+    "prompt": "TRUE POSITIVE or FALSE POSITIVE?\n\nTool: Bandit\nRule: B301 - pickle usage\nSeverity: MEDIUM\n\nCode:\n```python\nimport pickle\nimport hashlib\n\ndef load_cached_result(cache_key: str) -> object:\n    cache_path = f'/tmp/cache/{hashlib.sha256(cache_key.encode()).hexdigest()}.pkl'\n    with open(cache_path, 'rb') as f:\n        return pickle.load(f)\n```",
+    "ground_truth": {
+      "verdict": "true_positive",
+      "reasoning": "The cache_key hash prevents path traversal on the filename, but the pickle file itself may have been written by an attacker who can influence cache contents. If an adversary can write to /tmp/cache/, they can place a malicious pickle file and trigger RCE. The hashing only protects the path, not the deserialized content."
+    },
+    "rubric": {
+      "correct_verdict": 0.6,
+      "sound_reasoning": 0.4
+    },
+    "difficulty": "hard",
+    "tags": ["deserialization", "true-positive", "pickle", "cache-poisoning", "bandit"]
+  },
+  {
+    "id": "sast_008",
+    "domain": "sast_triage",
+    "prompt": "TRUE POSITIVE or FALSE POSITIVE?\n\nTool: ESLint (security plugin)\nRule: security/detect-non-literal-regexp\nSeverity: MEDIUM\n\nCode:\n```javascript\nfunction searchInText(text, userPattern) {\n  try {\n    const regex = new RegExp(userPattern, 'gi');\n    return text.match(regex) || [];\n  } catch (e) {\n    return [];\n  }\n}\n```",
+    "ground_truth": {
+      "verdict": "true_positive",
+      "reasoning": "User-supplied pattern is passed directly to RegExp constructor without sanitization. This enables ReDoS (Regular Expression Denial of Service) via catastrophically backtracking patterns. The try/catch prevents crashes but not CPU exhaustion from evil patterns like '(a+)+'."
+    },
+    "rubric": {
+      "correct_verdict": 0.6,
+      "sound_reasoning": 0.4
+    },
+    "difficulty": "medium",
+    "tags": ["redos", "true-positive", "regexp", "eslint", "dos"]
+  }
+]
