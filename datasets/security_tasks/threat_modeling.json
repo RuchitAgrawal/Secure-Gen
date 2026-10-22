@@ -1,0 +1,117 @@
+[
+  {
+    "id": "tm_001",
+    "domain": "threat_modeling",
+    "prompt": "Perform a threat model for the following system. Identify the top 5 threats using STRIDE. For each threat: (1) name it, (2) map to the relevant STRIDE category, (3) assign a risk rating (critical/high/medium/low), and (4) suggest a mitigation.\n\nSystem: A REST API that accepts user-uploaded CSV files, processes them with a Python pandas script, stores results in PostgreSQL, and returns a download link. The API is public-facing, authenticated via JWT tokens stored in localStorage on the frontend. The processing runs in a shared Docker container. No rate limiting is implemented.",
+    "ground_truth": {
+      "expected_threats": [
+        {"stride": "T", "threat": "CSV/formula injection leading to RCE in pandas or spreadsheet clients", "risk": "critical"},
+        {"stride": "E", "threat": "Broken access control - users accessing other users' result files via guessable download links", "risk": "high"},
+        {"stride": "D", "threat": "Denial of service via large/malicious CSV files exhausting memory in shared container", "risk": "high"},
+        {"stride": "I", "threat": "JWT stored in localStorage vulnerable to XSS theft", "risk": "high"},
+        {"stride": "E", "threat": "Container escape from shared processing environment exposing other users data", "risk": "critical"}
+      ],
+      "min_threats_required": 4
+    },
+    "rubric": {
+      "correct_stride_mapping": 0.25,
+      "identifies_critical_threats": 0.35,
+      "realistic_mitigations": 0.25,
+      "completeness": 0.15
+    },
+    "difficulty": "medium",
+    "tags": ["stride", "api", "csv-injection", "jwt", "docker"]
+  },
+  {
+    "id": "tm_002",
+    "domain": "threat_modeling",
+    "prompt": "Threat model this AI-powered application. Identify the top 5 threats specific to its AI/LLM components. For each: name it, assign a risk level, and suggest a mitigation.\n\nSystem: A customer support chatbot powered by GPT-4. It has access to: (1) a CRM tool to look up customer order history, (2) an email tool to send refund confirmations, (3) a knowledge base RAG system using unmoderated user-submitted FAQs. The chatbot processes all inbound customer messages without pre-filtering. System prompt contains internal escalation procedures and agent contact details.",
+    "ground_truth": {
+      "expected_threats": [
+        {"threat": "Prompt injection via customer messages hijacking bot behavior", "risk": "critical"},
+        {"threat": "Indirect prompt injection via poisoned RAG knowledge base entries", "risk": "critical"},
+        {"threat": "System prompt leakage exposing internal procedures and agent details", "risk": "high"},
+        {"threat": "Unauthorized refund/action via tool abuse through injected instructions", "risk": "critical"},
+        {"threat": "Data exfiltration of customer PII from CRM via malicious prompts", "risk": "high"}
+      ],
+      "min_threats_required": 4
+    },
+    "rubric": {
+      "identifies_ai_specific_threats": 0.4,
+      "identifies_tool_abuse_risk": 0.25,
+      "realistic_mitigations": 0.25,
+      "completeness": 0.1
+    },
+    "difficulty": "hard",
+    "tags": ["llm", "ai-security", "prompt-injection", "rag", "tool-abuse", "chatbot"]
+  },
+  {
+    "id": "tm_003",
+    "domain": "threat_modeling",
+    "prompt": "Threat model this CI/CD pipeline. Identify the top 5 supply chain threats. For each: name it, map to the relevant attack stage (source/build/package/deploy), assign risk, and suggest a mitigation.\n\nSystem: GitHub Actions pipeline that: (1) clones code from a public GitHub repo, (2) installs npm dependencies from package.json without lockfile pinning, (3) runs a third-party GitHub Action (actions/setup-node@v3) for Node setup, (4) builds and pushes Docker image to DockerHub, (5) deploys to production Kubernetes cluster using kubectl with cluster-admin role.",
+    "ground_truth": {
+      "expected_threats": [
+        {"threat": "Dependency confusion or typosquatting via unpinned npm packages", "stage": "build", "risk": "high"},
+        {"threat": "Compromised GitHub Action (actions/setup-node) executing malicious code in CI", "stage": "build", "risk": "high"},
+        {"threat": "Malicious code in production Docker image from untrusted base image or deps", "stage": "package", "risk": "high"},
+        {"threat": "Excessive cluster-admin RBAC permissions enabling full cluster compromise on breach", "stage": "deploy", "risk": "critical"},
+        {"threat": "Source code tampering via compromised GitHub account or branch protection bypass", "stage": "source", "risk": "high"}
+      ],
+      "min_threats_required": 4
+    },
+    "rubric": {
+      "correct_stage_mapping": 0.25,
+      "identifies_supply_chain_specifics": 0.35,
+      "realistic_mitigations": 0.25,
+      "completeness": 0.15
+    },
+    "difficulty": "hard",
+    "tags": ["supply-chain", "cicd", "github-actions", "npm", "kubernetes", "rbac"]
+  },
+  {
+    "id": "tm_004",
+    "domain": "threat_modeling",
+    "prompt": "Threat model this authentication system. Identify the top 5 threats and mitigations.\n\nSystem: Mobile banking app using: (1) username + password login, (2) SMS OTP as second factor, (3) 'remember this device' cookie valid for 90 days, (4) password reset via email link valid for 24 hours, (5) no account lockout after failed attempts, (6) sessions stored server-side with a 8-hour timeout.",
+    "ground_truth": {
+      "expected_threats": [
+        {"threat": "SIM swapping attack bypasses SMS OTP second factor", "risk": "critical"},
+        {"threat": "Brute force attacks enabled by absent account lockout", "risk": "high"},
+        {"threat": "Long-lived device cookie (90 days) enables session hijacking post-device-theft", "risk": "high"},
+        {"threat": "Password reset link valid 24h is excessively long, enabling phishing window", "risk": "medium"},
+        {"threat": "Credential stuffing from breached databases", "risk": "high"}
+      ],
+      "min_threats_required": 4
+    },
+    "rubric": {
+      "identifies_sim_swap": 0.25,
+      "identifies_brute_force": 0.2,
+      "realistic_mitigations": 0.3,
+      "completeness": 0.25
+    },
+    "difficulty": "medium",
+    "tags": ["authentication", "mfa", "sim-swap", "brute-force", "session"]
+  },
+  {
+    "id": "tm_005",
+    "domain": "threat_modeling",
+    "prompt": "Threat model this microservices architecture. Identify the top 5 threats and mitigations.\n\nSystem: E-commerce platform with: (1) API gateway (Kong) handling auth, (2) 12 internal microservices communicating via HTTP (no mTLS), (3) shared Redis cache for session data across services, (4) all services running in same Kubernetes namespace with default NetworkPolicy, (5) secrets passed as environment variables in pod specs, (6) centralized logging sending all request/response bodies to Elasticsearch.",
+    "ground_truth": {
+      "expected_threats": [
+        {"threat": "Lateral movement between services due to no mTLS and no network segmentation", "risk": "critical"},
+        {"threat": "Secret exposure via environment variables accessible to any process in pod or via kubectl describe", "risk": "high"},
+        {"threat": "Session hijacking via shared Redis cache if one service is compromised", "risk": "high"},
+        {"threat": "Sensitive data (PII, payment) logged to Elasticsearch creating a high-value breach target", "risk": "high"},
+        {"threat": "SSRF via server-side calls between microservices exploitable to reach internal metadata services", "risk": "medium"}
+      ],
+      "min_threats_required": 4
+    },
+    "rubric": {
+      "identifies_lateral_movement": 0.25,
+      "identifies_secrets_risk": 0.2,
+      "realistic_mitigations": 0.3,
+      "completeness": 0.25
+    },
+    "difficulty": "hard",
+    "tags": ["microservices", "kubernetes", "mtls", "secrets", "logging", "ssrf"]
+  }
+]
