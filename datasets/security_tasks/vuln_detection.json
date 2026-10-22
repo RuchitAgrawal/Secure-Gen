@@ -1,0 +1,208 @@
+[
+  {
+    "id": "vd_python_001",
+    "domain": "vuln_detection",
+    "prompt": "Identify all security vulnerabilities in the following Python code. For each vulnerability, state the CWE ID, the affected line number, the severity (critical/high/medium/low), and a brief explanation.\n\n```python\nimport sqlite3\nfrom flask import Flask, request\n\napp = Flask(__name__)\n\n@app.route('/user')\ndef get_user():\n    username = request.args.get('username')\n    conn = sqlite3.connect('users.db')\n    cursor = conn.cursor()\n    query = f\"SELECT * FROM users WHERE username = '{username}'\"\n    cursor.execute(query)\n    user = cursor.fetchone()\n    conn.close()\n    return str(user)\n```",
+    "ground_truth": {
+      "vulnerabilities": [
+        {
+          "cwe_id": "CWE-89",
+          "line": 11,
+          "severity": "critical",
+          "description": "SQL injection via unsanitized f-string interpolation of user input into query"
+        }
+      ]
+    },
+    "rubric": {
+      "correct_cwe": 0.5,
+      "correct_line_range": 0.2,
+      "correct_severity": 0.2,
+      "clear_explanation": 0.1
+    },
+    "difficulty": "easy",
+    "language": "python",
+    "cwe_id": "CWE-89",
+    "tags": ["sql-injection", "flask", "python", "web"]
+  },
+  {
+    "id": "vd_python_002",
+    "domain": "vuln_detection",
+    "prompt": "Identify all security vulnerabilities in the following Python code:\n\n```python\nimport os\nimport subprocess\nfrom flask import Flask, request\n\napp = Flask(__name__)\n\n@app.route('/ping')\ndef ping():\n    host = request.args.get('host', 'localhost')\n    result = subprocess.run(\n        f'ping -c 1 {host}',\n        shell=True,\n        capture_output=True,\n        text=True\n    )\n    return result.stdout\n```",
+    "ground_truth": {
+      "vulnerabilities": [
+        {
+          "cwe_id": "CWE-78",
+          "line": 11,
+          "severity": "critical",
+          "description": "OS command injection via shell=True with unsanitized user input interpolated into command string"
+        }
+      ]
+    },
+    "rubric": {
+      "correct_cwe": 0.5,
+      "correct_line_range": 0.2,
+      "correct_severity": 0.2,
+      "clear_explanation": 0.1
+    },
+    "difficulty": "easy",
+    "language": "python",
+    "cwe_id": "CWE-78",
+    "tags": ["command-injection", "flask", "subprocess", "shell"]
+  },
+  {
+    "id": "vd_python_003",
+    "domain": "vuln_detection",
+    "prompt": "Identify all security vulnerabilities in this Python code:\n\n```python\nimport pickle\nfrom flask import Flask, request\n\napp = Flask(__name__)\n\n@app.route('/load', methods=['POST'])\ndef load_data():\n    raw = request.get_data()\n    obj = pickle.loads(raw)\n    return {'status': 'loaded', 'type': type(obj).__name__}\n```",
+    "ground_truth": {
+      "vulnerabilities": [
+        {
+          "cwe_id": "CWE-502",
+          "line": 9,
+          "severity": "critical",
+          "description": "Insecure deserialization of untrusted data via pickle.loads on raw user input, enabling arbitrary code execution"
+        }
+      ]
+    },
+    "rubric": {
+      "correct_cwe": 0.5,
+      "correct_line_range": 0.2,
+      "correct_severity": 0.2,
+      "clear_explanation": 0.1
+    },
+    "difficulty": "medium",
+    "language": "python",
+    "cwe_id": "CWE-502",
+    "tags": ["deserialization", "pickle", "rce", "flask"]
+  },
+  {
+    "id": "vd_js_001",
+    "domain": "vuln_detection",
+    "prompt": "Identify all security vulnerabilities in this JavaScript code:\n\n```javascript\nconst express = require('express');\nconst app = express();\n\napp.get('/search', (req, res) => {\n  const query = req.query.q;\n  const html = `\n    <html>\n      <body>\n        <h1>Search results for: ${query}</h1>\n        <div id=\"results\"></div>\n      </body>\n    </html>\n  `;\n  res.send(html);\n});\n```",
+    "ground_truth": {
+      "vulnerabilities": [
+        {
+          "cwe_id": "CWE-79",
+          "line": 6,
+          "severity": "high",
+          "description": "Reflected XSS via unsanitized user input directly interpolated into HTML response"
+        }
+      ]
+    },
+    "rubric": {
+      "correct_cwe": 0.5,
+      "correct_line_range": 0.2,
+      "correct_severity": 0.2,
+      "clear_explanation": 0.1
+    },
+    "difficulty": "easy",
+    "language": "javascript",
+    "cwe_id": "CWE-79",
+    "tags": ["xss", "reflected", "express", "nodejs"]
+  },
+  {
+    "id": "vd_js_002",
+    "domain": "vuln_detection",
+    "prompt": "Identify all security vulnerabilities in this Node.js authentication code:\n\n```javascript\nconst crypto = require('crypto');\nconst express = require('express');\nconst app = express();\n\nfunction hashPassword(password) {\n  return crypto.createHash('md5').update(password).digest('hex');\n}\n\napp.post('/register', (req, res) => {\n  const { username, password } = req.body;\n  const hashed = hashPassword(password);\n  db.query('INSERT INTO users (username, password) VALUES (?, ?)', [username, hashed]);\n  res.json({ status: 'ok' });\n});\n```",
+    "ground_truth": {
+      "vulnerabilities": [
+        {
+          "cwe_id": "CWE-916",
+          "line": 5,
+          "severity": "high",
+          "description": "Use of weak cryptographic hash (MD5) for password storage without salt; susceptible to rainbow table attacks"
+        }
+      ]
+    },
+    "rubric": {
+      "correct_cwe": 0.5,
+      "correct_line_range": 0.2,
+      "correct_severity": 0.2,
+      "clear_explanation": 0.1
+    },
+    "difficulty": "easy",
+    "language": "javascript",
+    "cwe_id": "CWE-916",
+    "tags": ["weak-password-hash", "md5", "authentication", "nodejs"]
+  },
+  {
+    "id": "vd_c_001",
+    "domain": "vuln_detection",
+    "prompt": "Identify all security vulnerabilities in this C code:\n\n```c\n#include <stdio.h>\n#include <string.h>\n\nvoid process_input(char *input) {\n    char buffer[64];\n    strcpy(buffer, input);\n    printf(\"Processed: %s\\n\", buffer);\n}\n\nint main() {\n    char user_input[256];\n    fgets(user_input, sizeof(user_input), stdin);\n    process_input(user_input);\n    return 0;\n}\n```",
+    "ground_truth": {
+      "vulnerabilities": [
+        {
+          "cwe_id": "CWE-121",
+          "line": 5,
+          "severity": "critical",
+          "description": "Stack-based buffer overflow via strcpy with no bounds check; input longer than 64 bytes overwrites stack"
+        }
+      ]
+    },
+    "rubric": {
+      "correct_cwe": 0.5,
+      "correct_line_range": 0.2,
+      "correct_severity": 0.2,
+      "clear_explanation": 0.1
+    },
+    "difficulty": "easy",
+    "language": "c",
+    "cwe_id": "CWE-121",
+    "tags": ["buffer-overflow", "strcpy", "stack", "c"]
+  },
+  {
+    "id": "vd_c_002",
+    "domain": "vuln_detection",
+    "prompt": "Identify all security vulnerabilities in this C code:\n\n```c\n#include <stdio.h>\n#include <stdlib.h>\n\nvoid print_formatted(char *fmt_string) {\n    printf(fmt_string);\n}\n\nint main() {\n    char input[128];\n    fgets(input, sizeof(input), stdin);\n    print_formatted(input);\n    return 0;\n}\n```",
+    "ground_truth": {
+      "vulnerabilities": [
+        {
+          "cwe_id": "CWE-134",
+          "line": 4,
+          "severity": "critical",
+          "description": "Format string vulnerability: user-controlled input passed directly as printf format string, enabling memory read/write"
+        }
+      ]
+    },
+    "rubric": {
+      "correct_cwe": 0.5,
+      "correct_line_range": 0.2,
+      "correct_severity": 0.2,
+      "clear_explanation": 0.1
+    },
+    "difficulty": "medium",
+    "language": "c",
+    "cwe_id": "CWE-134",
+    "tags": ["format-string", "printf", "memory", "c"]
+  },
+  {
+    "id": "vd_go_001",
+    "domain": "vuln_detection",
+    "prompt": "Identify all security vulnerabilities in this Go code:\n\n```go\npackage main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"path/filepath\"\n\t\"os\"\n)\n\nfunc serveFile(w http.ResponseWriter, r *http.Request) {\n\tfilename := r.URL.Query().Get(\"file\")\n\tpath := filepath.Join(\"/var/www/files\", filename)\n\tcontent, err := os.ReadFile(path)\n\tif err != nil {\n\t\thttp.Error(w, \"Not found\", 404)\n\t\treturn\n\t}\n\tfmt.Fprintf(w, \"%s\", content)\n}\n```",
+    "ground_truth": {
+      "vulnerabilities": [
+        {
+          "cwe_id": "CWE-22",
+          "line": 11,
+          "severity": "critical",
+          "description": "Path traversal via unsanitized filename; filepath.Join does not prevent ../ sequences, allowing access outside /var/www/files"
+        }
+      ]
+    },
+    "rubric": {
+      "correct_cwe": 0.5,
+      "correct_line_range": 0.2,
+      "correct_severity": 0.2,
+      "clear_explanation": 0.1
+    },
+    "difficulty": "medium",
+    "language": "go",
+    "cwe_id": "CWE-22",
+    "tags": ["path-traversal", "directory-traversal", "go", "file-read"]
+  },
+  {
+    "id": "vd_python_004",
+    "domain": "vuln_detection",
+    "prompt": "Identify all security vulnerabilities in this Python JWT authentication code:\n\n```python\nimport jwt\nfrom flask import Flask, request, jsonify\n\napp = Flask(__name__)\nSECRET = 'mysecret'\n\n@app.route('/verify')\ndef verify_token():\n    token = request.headers.get('Authorization', '').replace('Bearer ', '')\n    try:\n        payload = jwt.decode(token, SECRET, algorithms=['none', 'HS256'])\n        return jsonify({'user': payload.get('sub')})\n    except jwt.InvalidTokenError:\n        return jsonify({'error': 'invalid'}), 401\n```",
+    "ground_truth": {
+      "vulnerabilities": [
+        {\n          \"cwe_id\": \"CWE-347\",\n          \"line\": 11,\n          \"severity\": \"critical\",\n          \"description\": \"JWT algorithm confusion: accepting 'none' algorithm allows forged tokens with no signature verification\"\n        },\n        {\n          \"cwe_id\": \"CWE-798\",\n          \"line\": 5,\n          \"severity\": \"high\",\n          \"description\": \"Hardcoded JWT secret in source code\"\n        }\n      ]\n    },\n    \"rubric\": {\n      \"correct_cwe\": 0.4,\n      \"finds_both_vulns\": 0.3,\n      \"correct_severity\": 0.2,\n      \"clear_explanation\": 0.1\n    },\n    \"difficulty\": \"hard\",\n    \"language\": \"python\",\n    \"cwe_id\": \"CWE-347\",\n    \"tags\": [\"jwt\", \"algorithm-confusion\", \"hardcoded-secret\", \"authentication\"]\n  },\n  {\n    \"id\": \"vd_python_005\",\n    \"domain\": \"vuln_detection\",\n    \"prompt\": \"Identify all security vulnerabilities in this Python YAML parsing code:\\n\\n```python\\nimport yaml\\nfrom flask import Flask, request\\n\\napp = Flask(__name__)\\n\\n@app.route('/config', methods=['POST'])\\ndef load_config():\\n    data = request.get_data(decode=True)\\n    config = yaml.load(data, Loader=yaml.Loader)\\n    return str(config.get('setting', ''))\\n```\",\n    \"ground_truth\": {\n      \"vulnerabilities\": [\n        {\n          \"cwe_id\": \"CWE-502\",\n          \"line\": 9,\n          \"severity\": \"critical\",\n          \"description\": \"Insecure YAML deserialization using yaml.Loader (full Loader) allows arbitrary Python object construction and RCE via PyYAML exploit\"\n        }\n      ]\n    },\n    \"rubric\": {\n      \"correct_cwe\": 0.5,\n      \"correct_line_range\": 0.2,\n      \"correct_severity\": 0.2,\n      \"clear_explanation\": 0.1\n    },\n    \"difficulty\": \"medium\",\n    \"language\": \"python\",\n    \"cwe_id\": \"CWE-502\",\n    \"tags\": [\"yaml\", \"deserialization\", \"rce\", \"pyyaml\"]\n  },\n  {\n    \"id\": \"vd_js_003\",\n    \"domain\": \"vuln_detection\",\n    \"prompt\": \"Identify all security vulnerabilities in this Express.js session configuration:\\n\\n```javascript\\nconst express = require('express');\\nconst session = require('express-session');\\nconst app = express();\\n\\napp.use(session({\\n  secret: 'abc123',\\n  resave: true,\\n  saveUninitialized: true,\\n  cookie: {\\n    secure: false,\\n    httpOnly: false,\\n    maxAge: null\\n  }\\n}));\\n```\",\n    \"ground_truth\": {\n      \"vulnerabilities\": [\n        {\n          \"cwe_id\": \"CWE-614\",\n          \"line\": 10,\n          \"severity\": \"high\",\n          \"description\": \"Session cookie missing Secure flag, transmitting session over HTTP\"\n        },\n        {\n          \"cwe_id\": \"CWE-1004\",\n          \"line\": 11,\n          \"severity\": \"high\",\n          \"description\": \"Session cookie missing HttpOnly flag, making it accessible to JavaScript and vulnerable to XSS theft\"\n        },\n        {\n          \"cwe_id\": \"CWE-798\",\n          \"line\": 6,\n          \"severity\": \"medium\",\n          \"description\": \"Weak hardcoded session secret\"\n        }\n      ]\n    },\n    \"rubric\": {\n      \"finds_all_vulns\": 0.5,\n      \"correct_cwes\": 0.3,\n      \"correct_severity\": 0.2\n    },\n    \"difficulty\": \"medium\",\n    \"language\": \"javascript\",\n    \"cwe_id\": \"CWE-614\",\n    \"tags\": [\"session\", \"cookie\", \"secure-flag\", \"httponly\", \"express\"]\n  }\n]
