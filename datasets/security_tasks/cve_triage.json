@@ -1,0 +1,202 @@
+[
+  {
+    "id": "cve_001",
+    "domain": "cve_triage",
+    "prompt": "Triage the following CVE. Determine: (1) severity level (critical/high/medium/low), (2) the primary affected component, (3) the attack vector (network/adjacent/local/physical), and (4) whether user interaction is required.\n\nCVE-2021-44228 (Log4Shell): A remote code execution vulnerability in Apache Log4j 2 where the library performs JNDI lookups on attacker-controlled strings passed via user-supplied data. The JNDI lookup can reference remote servers and load attacker-controlled Java classes, leading to arbitrary code execution. Affects Log4j2 versions 2.0-beta9 through 2.14.1.",
+    "ground_truth": {
+      "severity": "critical",
+      "component": "Apache Log4j 2 logging library",
+      "attack_vector": "network",
+      "user_interaction": false,
+      "cvss_score": 10.0
+    },
+    "rubric": {
+      "correct_severity": 0.35,
+      "correct_component": 0.25,
+      "correct_attack_vector": 0.25,
+      "correct_user_interaction": 0.15
+    },
+    "difficulty": "easy",
+    "tags": ["rce", "log4j", "jndi", "java", "critical"]
+  },
+  {
+    "id": "cve_002",
+    "domain": "cve_triage",
+    "prompt": "Triage this CVE:\n\nCVE-2022-22965 (Spring4Shell): A remote code execution vulnerability in Spring Framework. When a Spring MVC or Spring WebFlux application runs on JDK 9+ with a Tomcat deployment as a WAR, a specially crafted HTTP request can lead to RCE. The vulnerability stems from a bypass of the CVE-2010-1622 patch through the use of class.module.classLoader properties.",
+    "ground_truth": {
+      "severity": "critical",
+      "component": "Spring Framework MVC/WebFlux",
+      "attack_vector": "network",
+      "user_interaction": false,
+      "cvss_score": 9.8
+    },
+    "rubric": {
+      "correct_severity": 0.35,
+      "correct_component": 0.25,
+      "correct_attack_vector": 0.25,
+      "correct_user_interaction": 0.15
+    },
+    "difficulty": "medium",
+    "tags": ["rce", "spring", "java", "tomcat", "critical"]
+  },
+  {
+    "id": "cve_003",
+    "domain": "cve_triage",
+    "prompt": "Triage this CVE:\n\nCVE-2023-44487 (HTTP/2 Rapid Reset): A denial of service vulnerability in the HTTP/2 protocol implementation. An attacker can send a large number of HTTP/2 HEADERS frames followed immediately by RST_STREAM frames, causing web servers to continually allocate and immediately deallocate resources, leading to CPU exhaustion. Affected: most HTTP/2 server implementations including nginx, Apache, and cloud load balancers.",
+    "ground_truth": {
+      "severity": "high",
+      "component": "HTTP/2 protocol server implementations",
+      "attack_vector": "network",
+      "user_interaction": false,
+      "cvss_score": 7.5
+    },
+    "rubric": {
+      "correct_severity": 0.35,
+      "correct_component": 0.25,
+      "correct_attack_vector": 0.25,
+      "correct_user_interaction": 0.15
+    },
+    "difficulty": "medium",
+    "tags": ["dos", "http2", "rapid-reset", "ddos", "high"]
+  },
+  {
+    "id": "cve_004",
+    "domain": "cve_triage",
+    "prompt": "Triage this CVE:\n\nCVE-2023-34048 (VMware vCenter RCE): An out-of-bounds write vulnerability in VMware vCenter Server's DCERPC protocol implementation. A malicious actor with network access to vCenter can trigger this vulnerability to execute arbitrary code on the underlying operating system. The vulnerability does not require authentication.",
+    "ground_truth": {
+      "severity": "critical",
+      "component": "VMware vCenter Server DCERPC implementation",
+      "attack_vector": "network",
+      "user_interaction": false,
+      "cvss_score": 9.8
+    },
+    "rubric": {
+      "correct_severity": 0.35,
+      "correct_component": 0.25,
+      "correct_attack_vector": 0.25,
+      "correct_user_interaction": 0.15
+    },
+    "difficulty": "hard",
+    "tags": ["rce", "vcenter", "vmware", "oob-write", "unauthenticated"]
+  },
+  {
+    "id": "cve_005",
+    "domain": "cve_triage",
+    "prompt": "Triage this CVE:\n\nCVE-2024-3400 (PAN-OS Command Injection): A command injection vulnerability in the GlobalProtect feature of Palo Alto Networks PAN-OS software. An unauthenticated attacker can execute arbitrary code with root privileges on the firewall. Requires the device to have GlobalProtect gateway or portal enabled. Actively exploited in the wild as a zero-day.",
+    "ground_truth": {
+      "severity": "critical",
+      "component": "Palo Alto Networks PAN-OS GlobalProtect",
+      "attack_vector": "network",
+      "user_interaction": false,
+      "cvss_score": 10.0
+    },
+    "rubric": {
+      "correct_severity": 0.35,
+      "correct_component": 0.25,
+      "correct_attack_vector": 0.25,
+      "correct_user_interaction": 0.15
+    },
+    "difficulty": "medium",
+    "tags": ["rce", "palo-alto", "pan-os", "zero-day", "command-injection"]
+  },
+  {
+    "id": "cve_006",
+    "domain": "cve_triage",
+    "prompt": "Triage this CVE:\n\nCVE-2023-23397 (Outlook NTLM Relay): A zero-click privilege escalation vulnerability in Microsoft Outlook. When an attacker sends a specially crafted email with a custom notification sound path pointing to an attacker-controlled UNC path, Outlook automatically connects to the UNC path when the email is received (not opened), leaking the victim's Net-NTLMv2 hash.",
+    "ground_truth": {
+      "severity": "critical",
+      "component": "Microsoft Outlook calendar/notification handler",
+      "attack_vector": "network",
+      "user_interaction": false,
+      "cvss_score": 9.8
+    },
+    "rubric": {
+      "correct_severity": 0.35,
+      "correct_component": 0.25,
+      "correct_attack_vector": 0.25,
+      "correct_user_interaction": 0.15
+    },
+    "difficulty": "hard",
+    "tags": ["zero-click", "ntlm-relay", "outlook", "credential-theft", "windows"]
+  },
+  {
+    "id": "cve_007",
+    "domain": "cve_triage",
+    "prompt": "Triage this CVE:\n\nCVE-2022-41082 (ProxyNotShell): A remote code execution vulnerability in Microsoft Exchange Server that can be exploited by an authenticated attacker with access to PowerShell remoting. This is the RCE component of the ProxyNotShell exploit chain (used with CVE-2022-41040 for initial access). Requires authentication with at least Exchange mailbox permissions.",
+    "ground_truth": {
+      "severity": "high",
+      "component": "Microsoft Exchange Server PowerShell remoting",
+      "attack_vector": "network",
+      "user_interaction": false,
+      "cvss_score": 8.8
+    },
+    "rubric": {
+      "correct_severity": 0.35,
+      "correct_component": 0.25,
+      "correct_attack_vector": 0.25,
+      "correct_user_interaction": 0.15
+    },
+    "difficulty": "hard",
+    "tags": ["rce", "exchange", "proxynotshell", "authenticated", "powershell"]
+  },
+  {
+    "id": "cve_008",
+    "domain": "cve_triage",
+    "prompt": "Triage this CVE:\n\nCVE-2021-21985 (vCenter RCE via vSAN): A remote code execution vulnerability in the vSphere Client (HTML5). The Virtual SAN Health Check plugin, which is enabled by default in vCenter Server, has a vulnerability that allows a malicious actor with network access to port 443 to execute commands with unrestricted privileges on the underlying OS.",
+    "ground_truth": {
+      "severity": "critical",
+      "component": "VMware vCenter vSphere Client vSAN Health Check plugin",
+      "attack_vector": "network",
+      "user_interaction": false,
+      "cvss_score": 9.8
+    },
+    "rubric": {
+      "correct_severity": 0.35,
+      "correct_component": 0.25,
+      "correct_attack_vector": 0.25,
+      "correct_user_interaction": 0.15
+    },
+    "difficulty": "hard",
+    "tags": ["rce", "vcenter", "vsan", "unauthenticated", "plugin"]
+  },
+  {
+    "id": "cve_009",
+    "domain": "cve_triage",
+    "prompt": "Triage this CVE:\n\nCVE-2019-0708 (BlueKeep): A remote code execution vulnerability in Remote Desktop Services (formerly known as Terminal Services). An unauthenticated attacker can exploit this pre-authentication, no user interaction required vulnerability by sending specially crafted requests to the Remote Desktop Service (RDS) on an affected system. Wormable - could spread automatically like WannaCry.",
+    "ground_truth": {
+      "severity": "critical",
+      "component": "Windows Remote Desktop Services (RDS/RDP)",
+      "attack_vector": "network",
+      "user_interaction": false,
+      "cvss_score": 9.8
+    },
+    "rubric": {
+      "correct_severity": 0.35,
+      "correct_component": 0.25,
+      "correct_attack_vector": 0.25,
+      "correct_user_interaction": 0.15
+    },
+    "difficulty": "easy",
+    "tags": ["rce", "rdp", "wormable", "windows", "bluekeep"]
+  },
+  {
+    "id": "cve_010",
+    "domain": "cve_triage",
+    "prompt": "Triage this CVE:\n\nCVE-2023-4863 (WebP Heap Buffer Overflow): A heap buffer overflow in the WebP image library (libwebp) used by Chrome and many other applications. Processing a specially crafted WebP file can lead to out-of-bounds memory write. Actively exploited in the wild. The vulnerability exists in the Huffman code table building logic.",
+    "ground_truth": {
+      "severity": "critical",
+      "component": "libwebp WebP image processing library",
+      "attack_vector": "network",
+      "user_interaction": true,
+      "cvss_score": 8.8
+    },
+    "rubric": {
+      "correct_severity": 0.35,
+      "correct_component": 0.25,
+      "correct_attack_vector": 0.25,
+      "correct_user_interaction": 0.15
+    },
+    "difficulty": "medium",
+    "tags": ["heap-overflow", "webp", "chrome", "image-processing", "zero-day"]
+  }
+]
