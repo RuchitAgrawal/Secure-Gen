@@ -1,0 +1,159 @@
+import { useState, useMemo } from 'react'
+import Badge from '@/components/Badge'
+import { attackCategories, benchmarkDomains } from '@/lib/demo-data'
+import styles from './DatasetBrowser.module.css'
+
+const SAMPLE_ATTACKS = [
+  { id: 'pi_direct_001', category: 'prompt_injection', technique: 'direct_override', severity: 'high', mitre_atlas_id: 'AML.T0051.000', tags: ['direct', 'instruction-override'] },
+  { id: 'pi_indirect_001', category: 'prompt_injection', technique: 'tool_output_injection', severity: 'critical', mitre_atlas_id: 'AML.T0054.003', tags: ['indirect', 'tool-output'] },
+  { id: 'jb_roleplay_001', category: 'jailbreak', technique: 'persona_roleplay', severity: 'high', mitre_atlas_id: 'AML.T0051.001', tags: ['persona', 'roleplay'] },
+  { id: 'jb_encode_001', category: 'jailbreak', technique: 'base64_encoding', severity: 'high', mitre_atlas_id: 'AML.T0051.007', tags: ['base64', 'encoding'] },
+  { id: 'de_sysprompt_001', category: 'data_extraction', technique: 'direct_elicitation', severity: 'critical', mitre_atlas_id: 'AML.T0056.000', tags: ['system-prompt', 'direct'] },
+  { id: 'ta_func_001', category: 'tool_abuse', technique: 'function_hijacking', severity: 'critical', mitre_atlas_id: 'AML.T0054.008', tags: ['function-calling', 'email-exfiltration'] },
+  { id: 'ta_func_002', category: 'tool_abuse', technique: 'ssrf_via_agent', severity: 'critical', mitre_atlas_id: 'AML.T0054.009', tags: ['ssrf', 'aws-metadata'] },
+]
+
+const SAMPLE_TASKS = [
+  { id: 'vd_python_001', domain: 'vuln_detection', difficulty: 'easy', language: 'python', cwe_id: 'CWE-89', tags: ['sql-injection', 'flask'] },
+  { id: 'vd_js_001', domain: 'vuln_detection', difficulty: 'easy', language: 'javascript', cwe_id: 'CWE-79', tags: ['xss', 'nodejs'] },
+  { id: 'cve_001', domain: 'cve_triage', difficulty: 'easy', language: null, cwe_id: null, tags: ['rce', 'log4j'] },
+  { id: 'cve_003', domain: 'cve_triage', difficulty: 'medium', language: null, cwe_id: null, tags: ['dos', 'http2'] },
+  { id: 'sast_001', domain: 'sast_triage', difficulty: 'medium', language: 'python', cwe_id: null, tags: ['subprocess', 'false-positive'] },
+  { id: 'tm_002', domain: 'threat_modeling', difficulty: 'hard', language: null, cwe_id: null, tags: ['llm', 'ai-security'] },
+]
+
+type Tab = 'attacks' | 'tasks'
+
+export default function DatasetBrowser() {
+  const [tab, setTab] = useState<Tab>('attacks')
+  const [search, setSearch] = useState('')
+  const [catFilter, setCatFilter] = useState('')
+
+  const filteredAttacks = useMemo(() => {
+    return SAMPLE_ATTACKS.filter(a => {
+      const matchSearch = !search || a.id.includes(search) || a.technique.includes(search) || a.tags.some(t => t.includes(search))
+      const matchCat = !catFilter || a.category === catFilter
+      return matchSearch && matchCat
+    })
+  }, [search, catFilter])
+
+  const filteredTasks = useMemo(() => {
+    return SAMPLE_TASKS.filter(t => {
+      const matchSearch = !search || t.id.includes(search) || t.domain.includes(search) || t.tags.some(tag => tag.includes(search))
+      const matchCat = !catFilter || t.domain === catFilter
+      return matchSearch && matchCat
+    })
+  }, [search, catFilter])
+
+  const severityVariant = (s: string) => {
+    if (s === 'critical') return 'error' as const
+    if (s === 'high') return 'amber' as const
+    return 'default' as const
+  }
+
+  const difficultyVariant = (d: string) => {
+    if (d === 'hard') return 'error' as const
+    if (d === 'medium') return 'amber' as const
+    return 'success' as const
+  }
+
+  return (
+    <div className={styles.root}>
+      <div className={styles.pageHeader}>
+        <div className="container">
+          <h1 className={styles.title}>Dataset Browser</h1>
+          <p className={styles.subtitle}>Browse all attack prompts and benchmark tasks. Filter by category, technique, or search by keyword.</p>
+          <div className={styles.statsRow}>
+            {attackCategories.map(c => (
+              <div key={c.id} className={styles.statChip}>
+                <span className={styles.statDot} style={{ backgroundColor: c.color }} />
+                <span>{c.count} {c.label}</span>
+              </div>
+            ))}
+            {benchmarkDomains.map(d => (
+              <div key={d.id} className={styles.statChip}>
+                <span>{d.count} {d.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.body}>
+        <div className="container">
+          <div className={styles.controls}>
+            <div className={styles.tabs}>
+              <button className={`${styles.tab} ${tab === 'attacks' ? styles.tabActive : ''}`} onClick={() => { setTab('attacks'); setCatFilter('') }}>
+                Attack Prompts
+              </button>
+              <button className={`${styles.tab} ${tab === 'tasks' ? styles.tabActive : ''}`} onClick={() => { setTab('tasks'); setCatFilter('') }}>
+                Benchmark Tasks
+              </button>
+            </div>
+            <input
+              className={styles.search}
+              type="search"
+              placeholder="Search by ID, tag, or technique..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              id="dataset-search"
+            />
+          </div>
+
+          <div className={styles.categoryFilters}>
+            <button className={`${styles.catBtn} ${!catFilter ? styles.catBtnActive : ''}`} onClick={() => setCatFilter('')}>All</button>
+            {(tab === 'attacks' ? attackCategories : benchmarkDomains.map(d => ({ id: d.id, label: d.label }))).map(c => (
+              <button key={c.id} className={`${styles.catBtn} ${catFilter === c.id ? styles.catBtnActive : ''}`} onClick={() => setCatFilter(c.id)}>
+                {c.label}
+              </button>
+            ))}
+          </div>
+
+          <div className={styles.list}>
+            {tab === 'attacks' && filteredAttacks.map(a => (
+              <div key={a.id} className={styles.item}>
+                <div className={styles.itemTop}>
+                  <code className={styles.itemId}>{a.id}</code>
+                  <div className={styles.itemBadges}>
+                    <Badge variant={severityVariant(a.severity)}>{a.severity}</Badge>
+                    <Badge variant="default">{a.category.replace(/_/g, ' ')}</Badge>
+                  </div>
+                </div>
+                <div className={styles.itemMeta}>
+                  <span className={styles.technique}>{a.technique.replace(/_/g, ' ')}</span>
+                  {a.mitre_atlas_id && <span className={styles.mitre}>{a.mitre_atlas_id}</span>}
+                </div>
+                <div className={styles.tags}>
+                  {a.tags.map(t => <span key={t} className={styles.tag}>{t}</span>)}
+                </div>
+              </div>
+            ))}
+
+            {tab === 'tasks' && filteredTasks.map(t => (
+              <div key={t.id} className={styles.item}>
+                <div className={styles.itemTop}>
+                  <code className={styles.itemId}>{t.id}</code>
+                  <div className={styles.itemBadges}>
+                    <Badge variant={difficultyVariant(t.difficulty)}>{t.difficulty}</Badge>
+                    <Badge variant="teal">{t.domain.replace(/_/g, ' ')}</Badge>
+                  </div>
+                </div>
+                <div className={styles.itemMeta}>
+                  {t.language && <span className={styles.technique}>{t.language}</span>}
+                  {t.cwe_id && <span className={styles.mitre}>{t.cwe_id}</span>}
+                </div>
+                <div className={styles.tags}>
+                  {t.tags.map(tag => <span key={tag} className={styles.tag}>{tag}</span>)}
+                </div>
+              </div>
+            ))}
+
+            {((tab === 'attacks' && filteredAttacks.length === 0) || (tab === 'tasks' && filteredTasks.length === 0)) && (
+              <div className={styles.empty}>No items match your search or filter.</div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
