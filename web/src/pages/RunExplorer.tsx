@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { sampleAttackResults } from '@/lib/demo-data'
 import Badge from '@/components/Badge'
-import CodeBlock from '@/components/CodeBlock'
 import type { RunResult } from '@/lib/types'
 import styles from './RunExplorer.module.css'
 

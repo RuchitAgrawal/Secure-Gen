@@ -1,4 +1,4 @@
-import { type LeaderboardEntry, type RunResult, type AttackPrompt, type BenchmarkTask } from './types'
+import { type LeaderboardEntry, type RunResult } from './types'
 
 export const leaderboardData: LeaderboardEntry[] = [
   {

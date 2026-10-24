@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { leaderboardData, recentRuns, attackCategories } from '@/lib/demo-data'
+import { leaderboardData, recentRuns } from '@/lib/demo-data'
 import ScoreGauge from '@/components/ScoreGauge'
 import Badge from '@/components/Badge'
 import styles from './Home.module.css'
@@ -12,8 +12,6 @@ const STATS = [
 ]
 
 export default function Home() {
-  const topModel = leaderboardData[0]
-
   return (
     <div className={styles.root}>
       <section className={styles.hero}>

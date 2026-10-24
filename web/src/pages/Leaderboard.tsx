@@ -3,7 +3,6 @@ import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, Tool
 import { leaderboardData } from '@/lib/demo-data'
 import ScoreGauge from '@/components/ScoreGauge'
 import Badge from '@/components/Badge'
-import type { LeaderboardEntry } from '@/lib/types'
 import styles from './Leaderboard.module.css'
 
 const CATEGORY_LABELS: Record<string, string> = {
