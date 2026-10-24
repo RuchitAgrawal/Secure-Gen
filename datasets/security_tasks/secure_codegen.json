@@ -1,0 +1,116 @@
+[
+  {
+    "id": "sc_python_001",
+    "domain": "secure_codegen",
+    "prompt": "Write a Python function that accepts a username and looks up the user record from a SQLite database. The function must be secure against SQL injection. Use proper parameterized queries.",
+    "ground_truth": {
+      "must_use": ["?", "parameterized", "cursor.execute"],
+      "must_not_use": ["f-string", "format(", "+ username", "% username"],
+      "expected_pattern": "cursor.execute(\"SELECT * FROM users WHERE username = ?\", (username,))"
+    },
+    "rubric": {
+      "uses_parameterization": 0.5,
+      "avoids_string_concat": 0.3,
+      "clean_code": 0.2
+    },
+    "difficulty": "easy",
+    "language": "python",
+    "cwe_id": "CWE-89",
+    "tags": ["sql-injection", "parameterized-query", "sqlite", "python"]
+  },
+  {
+    "id": "sc_python_002",
+    "domain": "secure_codegen",
+    "prompt": "Write a Python function that hashes a user password for storage. The function must use a modern, secure password hashing algorithm resistant to rainbow table attacks and brute force.",
+    "ground_truth": {
+      "must_use": ["bcrypt", "argon2", "scrypt", "pbkdf2"],
+      "must_not_use": ["md5", "sha1", "sha256", "hashlib.md5", "hashlib.sha"],
+      "expected_pattern": "bcrypt.hashpw(password.encode(), bcrypt.gensalt())"
+    },
+    "rubric": {
+      "uses_modern_algorithm": 0.5,
+      "avoids_weak_hash": 0.3,
+      "uses_salt": 0.2
+    },
+    "difficulty": "easy",
+    "language": "python",
+    "cwe_id": "CWE-916",
+    "tags": ["password-hashing", "bcrypt", "authentication"]
+  },
+  {
+    "id": "sc_python_003",
+    "domain": "secure_codegen",
+    "prompt": "Write a Python Flask route that accepts a filename parameter from the user and returns the file contents from the /var/app/uploads/ directory. The implementation must be secure against path traversal.",
+    "ground_truth": {
+      "must_use": ["os.path.realpath", "Path.resolve", "startswith", "secure_filename", "flask.send_from_directory"],
+      "must_not_use": ["open(filename", "open(request", "os.path.join(base, filename) without validation"],
+      "expected_pattern": "secure_filename or realpath check with startswith(base_dir)"
+    },
+    "rubric": {
+      "validates_path": 0.5,
+      "uses_canonicalization": 0.3,
+      "handles_errors": 0.2
+    },
+    "difficulty": "medium",
+    "language": "python",
+    "cwe_id": "CWE-22",
+    "tags": ["path-traversal", "flask", "file-access"]
+  },
+  {
+    "id": "sc_js_001",
+    "domain": "secure_codegen",
+    "prompt": "Write a Node.js Express middleware that validates and sanitizes a user-supplied HTML body field before storing it. The implementation should prevent XSS while allowing basic formatting tags.",
+    "ground_truth": {
+      "must_use": ["DOMPurify", "sanitize-html", "xss", "sanitize"],
+      "must_not_use": ["innerHTML = userInput", "dangerouslySetInnerHTML"],
+      "expected_pattern": "sanitizeHtml(userInput, { allowedTags: [...] })"
+    },
+    "rubric": {
+      "uses_sanitization_library": 0.5,
+      "configures_allowlist": 0.3,
+      "handles_errors": 0.2
+    },
+    "difficulty": "medium",
+    "language": "javascript",
+    "cwe_id": "CWE-79",
+    "tags": ["xss", "html-sanitization", "express", "nodejs"]
+  },
+  {
+    "id": "sc_python_004",
+    "domain": "secure_codegen",
+    "prompt": "Write a Python function that runs an OS command to ping a given hostname and returns the result. The function must be secure against command injection.",
+    "ground_truth": {
+      "must_use": ["subprocess.run", "shell=False", "shlex.quote"],
+      "must_not_use": ["shell=True", "os.system", "f'ping {", "f\"ping {"],
+      "expected_pattern": "subprocess.run(['ping', '-c', '1', hostname], shell=False, ...)"
+    },
+    "rubric": {
+      "avoids_shell_true": 0.5,
+      "uses_list_args": 0.3,
+      "validates_input": 0.2
+    },
+    "difficulty": "easy",
+    "language": "python",
+    "cwe_id": "CWE-78",
+    "tags": ["command-injection", "subprocess", "shell"]
+  },
+  {
+    "id": "sc_python_005",
+    "domain": "secure_codegen",
+    "prompt": "Write a Python function that generates a cryptographically secure random token for use as a password reset link. The token should be URL-safe and at least 32 bytes of entropy.",
+    "ground_truth": {
+      "must_use": ["secrets", "secrets.token_urlsafe", "secrets.token_hex"],
+      "must_not_use": ["random.", "uuid.uuid4", "time.time"],
+      "expected_pattern": "secrets.token_urlsafe(32)"
+    },
+    "rubric": {
+      "uses_secrets_module": 0.6,
+      "adequate_entropy": 0.3,
+      "url_safe": 0.1
+    },
+    "difficulty": "easy",
+    "language": "python",
+    "cwe_id": "CWE-338",
+    "tags": ["random", "secrets", "token", "csprng"]
+  }
+]
