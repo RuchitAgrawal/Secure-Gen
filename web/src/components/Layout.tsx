@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import styles from './Layout.module.css'
 
@@ -12,11 +13,13 @@ const navItems = [
 ]
 
 export default function Layout() {
+  const [menuOpen, setMenuOpen] = useState(false)
+
   return (
     <div className={styles.root}>
       <header className={styles.nav}>
         <div className={styles.navInner}>
-          <NavLink to="/" className={styles.wordmark}>
+          <NavLink to="/" className={styles.wordmark} onClick={() => setMenuOpen(false)}>
             <span className={styles.spike} aria-hidden="true">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <line x1="8" y1="0" x2="8" y2="16" stroke="currentColor" strokeWidth="1.5" />
@@ -27,7 +30,7 @@ export default function Layout() {
             </span>
             Secure Gen
           </NavLink>
-          <nav className={styles.navLinks}>
+          <nav className={`${styles.navLinks} ${menuOpen ? styles.navLinksOpen : ''}`} aria-label="Main navigation">
             {navItems.map(item => (
               <NavLink
                 key={item.to}
@@ -36,6 +39,7 @@ export default function Layout() {
                 className={({ isActive }) =>
                   `${styles.navLink} ${isActive ? styles.navLinkActive : ''}`
                 }
+                onClick={() => setMenuOpen(false)}
               >
                 {item.label}
               </NavLink>
@@ -47,12 +51,21 @@ export default function Layout() {
               target="_blank"
               rel="noopener noreferrer"
               className={styles.githubLink}
+              aria-label="View source on GitHub"
             >
               GitHub
             </a>
-            <a href="/playground" className={styles.ctaButton}>
+            <NavLink to="/playground" className={styles.ctaButton}>
               Try Playground
-            </a>
+            </NavLink>
+            <button
+              className={styles.menuToggle}
+              onClick={() => setMenuOpen(o => !o)}
+              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={menuOpen}
+            >
+              <span className={`${styles.menuBar} ${menuOpen ? styles.menuBarOpen : ''}`} />
+            </button>
           </div>
         </div>
       </header>
@@ -62,3 +75,4 @@ export default function Layout() {
     </div>
   )
 }
+

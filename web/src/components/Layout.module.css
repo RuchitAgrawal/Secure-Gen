@@ -116,9 +116,80 @@
 @media (max-width: 768px) {
   .navLinks {
     display: none;
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+    background-color: var(--color-canvas);
+    border-bottom: 1px solid var(--color-hairline);
+    flex-direction: column;
+    padding: var(--spacing-md);
+    gap: var(--spacing-xs);
+    z-index: 49;
+  }
+
+  .navLinksOpen {
+    display: flex;
   }
 
   .navInner {
     padding: 0 var(--spacing-md);
+    position: relative;
   }
+
+  .menuToggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .menuBar {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background-color: var(--color-ink);
+    border-radius: 1px;
+    position: relative;
+    transition: background-color var(--transition-fast);
+  }
+
+  .menuBar::before,
+  .menuBar::after {
+    content: '';
+    display: block;
+    width: 18px;
+    height: 2px;
+    background-color: var(--color-ink);
+    border-radius: 1px;
+    position: absolute;
+    left: 0;
+    transition: transform var(--transition-base);
+  }
+
+  .menuBar::before { top: -5px; }
+  .menuBar::after { top: 5px; }
+
+  .menuBarOpen {
+    background-color: transparent;
+  }
+
+  .menuBarOpen::before {
+    transform: translateY(5px) rotate(45deg);
+  }
+
+  .menuBarOpen::after {
+    transform: translateY(-5px) rotate(-45deg);
+  }
+
+  .githubLink { display: none; }
+}
+
+@media (min-width: 769px) {
+  .menuToggle { display: none; }
 }
