@@ -203,6 +203,7 @@ def report_generate(
         raise typer.Exit(1)
 
     from securegen.reporters.markdown import generate_markdown_report
+    from securegen.reporters.html import generate_html_report
     output.mkdir(parents=True, exist_ok=True)
     with open(run) as f:
         results = json.load(f)
@@ -213,12 +214,17 @@ def report_generate(
         content = generate_markdown_report(results, stem)
         out.write_text(content)
         console.print(f"[green]Report written to {out}[/green]")
+    elif format == "html":
+        out = output / f"{stem}.html"
+        content = generate_html_report(results, stem)
+        out.write_text(content)
+        console.print(f"[green]HTML report written to {out}[/green]")
     elif format == "json":
         out = output / f"{stem}_report.json"
         out.write_text(json.dumps(results, indent=2))
         console.print(f"[green]JSON report written to {out}[/green]")
     else:
-        console.print(f"[yellow]Format '{format}' not yet supported, using markdown.[/yellow]")
+        console.print(f"[yellow]Unknown format '{format}', defaulting to markdown.[/yellow]")
         out = output / f"{stem}.md"
         content = generate_markdown_report(results, stem)
         out.write_text(content)
