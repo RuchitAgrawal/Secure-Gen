@@ -3,6 +3,8 @@ import {
   ResponsiveContainer, ScatterChart, Scatter, Cell,
 } from 'recharts'
 import { leaderboardData } from '@/lib/demo-data'
+import { useDocumentTitle } from '@/lib/hooks'
+import RadarChart from '@/components/RadarChart'
 import styles from './Visualizations.module.css'
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -33,6 +35,28 @@ const scatterData = leaderboardData.map((m, i) => ({
 
 const heatmapCategories = Object.keys(CATEGORY_LABELS)
 
+const radarCategories = [
+  'Vuln Detection',
+  'CVE Triage',
+  'SAST Triage',
+  'Threat Modeling',
+  'Prompt Injection',
+  'Jailbreak',
+]
+
+const radarSeries = leaderboardData.slice(0, 3).map((m, i) => ({
+  name: m.model,
+  color: MODEL_COLORS[i],
+  values: [
+    m.category_scores.vuln_detection ?? 70,
+    m.category_scores.cve_triage ?? 70,
+    m.category_scores.sast_triage ?? 70,
+    m.category_scores.threat_modeling ?? 70,
+    m.category_scores.prompt_injection ?? 70,
+    m.category_scores.jailbreak ?? 70,
+  ],
+}))
+
 const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: { name: string; value: number }[] }) => {
   if (!active || !payload?.length) return null
   return (
@@ -48,6 +72,8 @@ const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: { name
 }
 
 export default function Visualizations() {
+  useDocumentTitle('Benchmark Visualizations | Secure Gen')
+
   return (
     <div className={styles.root}>
       <div className={styles.pageHeader}>
@@ -59,6 +85,18 @@ export default function Visualizations() {
 
       <div className={styles.body}>
         <div className="container">
+
+          <section className={styles.chartSection}>
+            <h2 className={styles.chartTitle}>Multi-axis security capability radar</h2>
+            <p className={styles.chartDesc}>Head-to-head radar comparison across top frontier models showing domain balance.</p>
+            <div className={styles.chartWrap} style={{ display: 'flex', justifyContent: 'center' }}>
+              <RadarChart
+                categories={radarCategories}
+                series={radarSeries}
+                size={380}
+              />
+            </div>
+          </section>
 
           <section className={styles.chartSection}>
             <h2 className={styles.chartTitle}>Score by category and model</h2>
