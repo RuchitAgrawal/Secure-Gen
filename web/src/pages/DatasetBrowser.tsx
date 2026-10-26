@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useDocumentTitle, useDebounce } from '@/lib/hooks'
 import Badge from '@/components/Badge'
+import { useToast } from '@/components/Toast'
+import { downloadJsonFile, copyToClipboard } from '@/lib/export'
 import { attackCategories, benchmarkDomains } from '@/lib/demo-data'
 import styles from './DatasetBrowser.module.css'
 
@@ -38,6 +40,7 @@ type Tab = 'attacks' | 'tasks'
 
 export default function DatasetBrowser() {
   useDocumentTitle('Dataset Browser')
+  const { showToast } = useToast()
   const [tab, setTab] = useState<Tab>('attacks')
   const [search, setSearch] = useState('')
   const [catFilter, setCatFilter] = useState('')
@@ -55,6 +58,17 @@ export default function DatasetBrowser() {
     const matchCat = !catFilter || t.domain === catFilter
     return matchSearch && matchCat
   })
+
+  const handleExport = () => {
+    const items = tab === 'attacks' ? filteredAttacks : filteredTasks
+    downloadJsonFile(items, `securegen_${tab}_${Date.now()}.json`)
+    showToast(`Exported ${items.length} ${tab} items to JSON`, 'success')
+  }
+
+  const handleCopyId = async (id: string) => {
+    const ok = await copyToClipboard(id)
+    if (ok) showToast(`Copied ${id} to clipboard`, 'info')
+  }
 
   const severityVariant = (s: string) => {
     if (s === 'critical') return 'error' as const
@@ -95,20 +109,30 @@ export default function DatasetBrowser() {
           <div className={styles.controls}>
             <div className={styles.tabs}>
               <button className={`${styles.tab} ${tab === 'attacks' ? styles.tabActive : ''}`} onClick={() => { setTab('attacks'); setCatFilter('') }}>
-                Attack Prompts
+                Attack Prompts ({filteredAttacks.length})
               </button>
               <button className={`${styles.tab} ${tab === 'tasks' ? styles.tabActive : ''}`} onClick={() => { setTab('tasks'); setCatFilter('') }}>
-                Benchmark Tasks
+                Benchmark Tasks ({filteredTasks.length})
               </button>
             </div>
-            <input
-              className={styles.search}
-              type="search"
-              placeholder="Search by ID, tag, or technique..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              id="dataset-search"
-            />
+            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+              <input
+                className={styles.search}
+                type="search"
+                placeholder="Search by ID, tag, or technique..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                id="dataset-search"
+              />
+              <button
+                type="button"
+                onClick={handleExport}
+                className={styles.tab}
+                style={{ cursor: 'pointer', whiteSpace: 'nowrap', borderColor: 'var(--color-primary)', color: 'var(--color-primary)' }}
+              >
+                Export JSON
+              </button>
+            </div>
           </div>
 
           <div className={styles.categoryFilters}>
@@ -124,7 +148,14 @@ export default function DatasetBrowser() {
             {tab === 'attacks' && filteredAttacks.map(a => (
               <div key={a.id} className={styles.item}>
                 <div className={styles.itemTop}>
-                  <code className={styles.itemId}>{a.id}</code>
+                  <code
+                    className={styles.itemId}
+                    onClick={() => handleCopyId(a.id)}
+                    title="Click to copy ID"
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {a.id}
+                  </code>
                   <div className={styles.itemBadges}>
                     <Badge variant={severityVariant(a.severity)}>{a.severity}</Badge>
                     <Badge variant="default">{a.category.replace(/_/g, ' ')}</Badge>
@@ -143,7 +174,14 @@ export default function DatasetBrowser() {
             {tab === 'tasks' && filteredTasks.map(t => (
               <div key={t.id} className={styles.item}>
                 <div className={styles.itemTop}>
-                  <code className={styles.itemId}>{t.id}</code>
+                  <code
+                    className={styles.itemId}
+                    onClick={() => handleCopyId(t.id)}
+                    title="Click to copy ID"
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {t.id}
+                  </code>
                   <div className={styles.itemBadges}>
                     <Badge variant={difficultyVariant(t.difficulty)}>{t.difficulty}</Badge>
                     <Badge variant="teal">{t.domain.replace(/_/g, ' ')}</Badge>

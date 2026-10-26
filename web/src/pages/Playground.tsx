@@ -2,6 +2,7 @@ import { useState } from 'react'
 import Badge from '@/components/Badge'
 import { useDocumentTitle } from '@/lib/hooks'
 import { useToast } from '@/components/Toast'
+import { downloadJsonFile, copyToClipboard } from '@/lib/export'
 import styles from './Playground.module.css'
 
 const MODELS = [
@@ -58,6 +59,23 @@ export default function Playground() {
     setPrompt('')
     setTechnique('')
     setResponses({})
+  }
+
+  const handleCopyPrompt = async () => {
+    if (!prompt) return
+    const ok = await copyToClipboard(prompt)
+    if (ok) showToast('Prompt copied to clipboard', 'info')
+  }
+
+  const handleExportPlayground = () => {
+    const payload = {
+      timestamp: new Date().toISOString(),
+      prompt,
+      technique: technique || 'custom',
+      results: responses
+    }
+    downloadJsonFile(payload, `playground_eval_${Date.now()}.json`)
+    showToast('Exported playground results to JSON', 'success')
   }
 
   const runAttack = async () => {
@@ -118,15 +136,26 @@ export default function Playground() {
               <div className={styles.section}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <label className={styles.label} htmlFor="prompt-editor">Prompt payload</label>
-                  {prompt && (
-                    <button
-                      type="button"
-                      onClick={clearPrompt}
-                      style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', fontSize: '0.75rem', cursor: 'pointer' }}
-                    >
-                      Clear
-                    </button>
-                  )}
+                  <div style={{ display: 'flex', gap: '0.75rem' }}>
+                    {prompt && (
+                      <button
+                        type="button"
+                        onClick={handleCopyPrompt}
+                        style={{ background: 'none', border: 'none', color: 'var(--color-primary)', fontSize: '0.75rem', cursor: 'pointer' }}
+                      >
+                        Copy
+                      </button>
+                    )}
+                    {prompt && (
+                      <button
+                        type="button"
+                        onClick={clearPrompt}
+                        style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', fontSize: '0.75rem', cursor: 'pointer' }}
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <textarea
                   id="prompt-editor"
@@ -168,9 +197,20 @@ export default function Playground() {
             <div className={styles.results}>
               <div className={styles.resultsHeader}>
                 <span className={styles.label}>Model responses</span>
-                {Object.keys(responses).length > 0 && (
-                  <span className={styles.resultsCount}>{Object.keys(responses).length} / {selectedModels.length} completed</span>
-                )}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  {Object.keys(responses).length > 0 && (
+                    <button
+                      type="button"
+                      onClick={handleExportPlayground}
+                      style={{ background: 'none', border: '1px solid var(--color-border)', borderRadius: '4px', padding: '0.2rem 0.5rem', color: 'var(--color-text-secondary)', fontSize: '0.75rem', cursor: 'pointer' }}
+                    >
+                      Export JSON
+                    </button>
+                  )}
+                  {Object.keys(responses).length > 0 && (
+                    <span className={styles.resultsCount}>{Object.keys(responses).length} / {selectedModels.length} completed</span>
+                  )}
+                </div>
               </div>
 
               {selectedModels.length === 0 && (
