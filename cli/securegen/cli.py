@@ -16,14 +16,16 @@ from securegen.core.runner import BatchRunner
 from securegen.attacks.evaluators import classify_attack_response, compute_attack_success_rate
 from securegen.benchmarks.scorers import score_response
 
-app = typer.Typer(help="Secure Gen - LLM red-teaming and benchmarking framework")
+app = typer.Typer(help="Secure Gen: LLM red-teaming and benchmarking framework")
 attack_app = typer.Typer(help="Run adversarial attacks against LLMs")
 benchmark_app = typer.Typer(help="Run security task benchmarks")
 report_app = typer.Typer(help="Generate and serve reports")
+data_app = typer.Typer(help="Dataset management and export utilities")
 
 app.add_typer(attack_app, name="attack")
 app.add_typer(benchmark_app, name="benchmark")
 app.add_typer(report_app, name="report")
+app.add_typer(data_app, name="data")
 
 console = Console()
 
@@ -229,6 +231,34 @@ def report_generate(
         content = generate_markdown_report(results, stem)
         out.write_text(content)
         console.print(f"[green]Report written to {out}[/green]")
+
+
+@data_app.command("export")
+def data_export(
+    dataset: Path = typer.Option(..., "--dataset", "-d", help="Path to input dataset JSON"),
+    output: Path = typer.Option(..., "--output", "-o", help="Target output file path"),
+    format: str = typer.Option("jsonl", "--format", "-f", help="Output format: jsonl or csv"),
+):
+    """Export dataset to JSONL or CSV format."""
+    if not dataset.exists():
+        console.print(f"[red]Dataset not found: {dataset}[/red]")
+        raise typer.Exit(1)
+
+    from securegen.reporters.exporter import export_to_csv, export_to_jsonl
+
+    with open(dataset, encoding="utf-8") as f:
+        data = json.load(f)
+
+    if not isinstance(data, list):
+        console.print("[red]Dataset root must be a JSON array[/red]")
+        raise typer.Exit(1)
+
+    if format.lower() == "csv":
+        count = export_to_csv(data, output)
+        console.print(f"[green]Successfully exported {count} records to CSV: {output}[/green]")
+    else:
+        count = export_to_jsonl(data, output)
+        console.print(f"[green]Successfully exported {count} records to JSONL: {output}[/green]")
 
 
 if __name__ == "__main__":
