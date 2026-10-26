@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
+import { useDocumentTitle, useDebounce } from '@/lib/hooks'
 import Badge from '@/components/Badge'
 import { attackCategories, benchmarkDomains } from '@/lib/demo-data'
 import styles from './DatasetBrowser.module.css'
@@ -6,44 +7,54 @@ import styles from './DatasetBrowser.module.css'
 const SAMPLE_ATTACKS = [
   { id: 'pi_direct_001', category: 'prompt_injection', technique: 'direct_override', severity: 'high', mitre_atlas_id: 'AML.T0051.000', tags: ['direct', 'instruction-override'] },
   { id: 'pi_indirect_001', category: 'prompt_injection', technique: 'tool_output_injection', severity: 'critical', mitre_atlas_id: 'AML.T0054.003', tags: ['indirect', 'tool-output'] },
+  { id: 'pi_supply_001', category: 'prompt_injection', technique: 'rag_document_injection', severity: 'critical', mitre_atlas_id: 'AML.T0054.003', tags: ['rag', 'document-injection'] },
+  { id: 'pi_supply_002', category: 'prompt_injection', technique: 'email_content_injection', severity: 'critical', mitre_atlas_id: 'AML.T0054.000', tags: ['email-injection', 'agentic-attack'] },
   { id: 'jb_roleplay_001', category: 'jailbreak', technique: 'persona_roleplay', severity: 'high', mitre_atlas_id: 'AML.T0051.001', tags: ['persona', 'roleplay'] },
   { id: 'jb_encode_001', category: 'jailbreak', technique: 'base64_encoding', severity: 'high', mitre_atlas_id: 'AML.T0051.007', tags: ['base64', 'encoding'] },
+  { id: 'jb_authority_001', category: 'jailbreak', technique: 'authority_claim', severity: 'high', mitre_atlas_id: 'AML.T0051.005', tags: ['authority-spoof', 'phishing'] },
+  { id: 'jb_escalation_001', category: 'jailbreak', technique: 'gradual_escalation', severity: 'high', mitre_atlas_id: 'AML.T0051.010', tags: ['gradual-escalation', 'social-engineering'] },
   { id: 'de_sysprompt_001', category: 'data_extraction', technique: 'direct_elicitation', severity: 'critical', mitre_atlas_id: 'AML.T0056.000', tags: ['system-prompt', 'direct'] },
   { id: 'ta_func_001', category: 'tool_abuse', technique: 'function_hijacking', severity: 'critical', mitre_atlas_id: 'AML.T0054.008', tags: ['function-calling', 'email-exfiltration'] },
   { id: 'ta_func_002', category: 'tool_abuse', technique: 'ssrf_via_agent', severity: 'critical', mitre_atlas_id: 'AML.T0054.009', tags: ['ssrf', 'aws-metadata'] },
+  { id: 'ta_func_003', category: 'tool_abuse', technique: 'shell_command_injection', severity: 'critical', mitre_atlas_id: 'AML.T0054.010', tags: ['shell', 'command-injection', 'agentic'] },
 ]
 
 const SAMPLE_TASKS = [
   { id: 'vd_python_001', domain: 'vuln_detection', difficulty: 'easy', language: 'python', cwe_id: 'CWE-89', tags: ['sql-injection', 'flask'] },
   { id: 'vd_js_001', domain: 'vuln_detection', difficulty: 'easy', language: 'javascript', cwe_id: 'CWE-79', tags: ['xss', 'nodejs'] },
+  { id: 'vd_python_002', domain: 'vuln_detection', difficulty: 'medium', language: 'python', cwe_id: 'CWE-78', tags: ['command-injection', 'subprocess'] },
+  { id: 'vd_go_001', domain: 'vuln_detection', difficulty: 'medium', language: 'go', cwe_id: 'CWE-22', tags: ['path-traversal', 'http'] },
   { id: 'cve_001', domain: 'cve_triage', difficulty: 'easy', language: null, cwe_id: null, tags: ['rce', 'log4j'] },
   { id: 'cve_003', domain: 'cve_triage', difficulty: 'medium', language: null, cwe_id: null, tags: ['dos', 'http2'] },
+  { id: 'cve_006', domain: 'cve_triage', difficulty: 'hard', language: null, cwe_id: null, tags: ['supply-chain', 'xz-utils'] },
   { id: 'sast_001', domain: 'sast_triage', difficulty: 'medium', language: 'python', cwe_id: null, tags: ['subprocess', 'false-positive'] },
+  { id: 'sast_003', domain: 'sast_triage', difficulty: 'hard', language: 'java', cwe_id: null, tags: ['deserialization', 'true-positive'] },
   { id: 'tm_002', domain: 'threat_modeling', difficulty: 'hard', language: null, cwe_id: null, tags: ['llm', 'ai-security'] },
+  { id: 'sc_python_001', domain: 'secure_codegen', difficulty: 'easy', language: 'python', cwe_id: 'CWE-89', tags: ['sql-injection', 'parameterized-query'] },
+  { id: 'sc_python_002', domain: 'secure_codegen', difficulty: 'easy', language: 'python', cwe_id: 'CWE-916', tags: ['password-hashing', 'bcrypt'] },
 ]
 
 type Tab = 'attacks' | 'tasks'
 
 export default function DatasetBrowser() {
+  useDocumentTitle('Dataset Browser')
   const [tab, setTab] = useState<Tab>('attacks')
   const [search, setSearch] = useState('')
   const [catFilter, setCatFilter] = useState('')
 
-  const filteredAttacks = useMemo(() => {
-    return SAMPLE_ATTACKS.filter(a => {
-      const matchSearch = !search || a.id.includes(search) || a.technique.includes(search) || a.tags.some(t => t.includes(search))
-      const matchCat = !catFilter || a.category === catFilter
-      return matchSearch && matchCat
-    })
-  }, [search, catFilter])
+  const debouncedSearch = useDebounce(search, 200)
 
-  const filteredTasks = useMemo(() => {
-    return SAMPLE_TASKS.filter(t => {
-      const matchSearch = !search || t.id.includes(search) || t.domain.includes(search) || t.tags.some(tag => tag.includes(search))
-      const matchCat = !catFilter || t.domain === catFilter
-      return matchSearch && matchCat
-    })
-  }, [search, catFilter])
+  const filteredAttacks = SAMPLE_ATTACKS.filter(a => {
+    const matchSearch = !debouncedSearch || a.id.includes(debouncedSearch) || a.technique.includes(debouncedSearch) || a.tags.some(t => t.includes(debouncedSearch))
+    const matchCat = !catFilter || a.category === catFilter
+    return matchSearch && matchCat
+  })
+
+  const filteredTasks = SAMPLE_TASKS.filter(t => {
+    const matchSearch = !debouncedSearch || t.id.includes(debouncedSearch) || t.domain.includes(debouncedSearch) || t.tags.some(tag => tag.includes(debouncedSearch))
+    const matchCat = !catFilter || t.domain === catFilter
+    return matchSearch && matchCat
+  })
 
   const severityVariant = (s: string) => {
     if (s === 'critical') return 'error' as const
