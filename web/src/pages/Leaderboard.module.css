@@ -101,7 +101,7 @@
 
 .row {
   display: grid;
-  grid-template-columns: 40px 2fr 100px 120px 120px 100px;
+  grid-template-columns: 36px 2fr 90px 105px 105px 105px 85px;
   gap: var(--spacing-md);
   align-items: center;
   padding: 16px var(--spacing-lg);

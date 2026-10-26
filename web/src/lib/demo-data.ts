@@ -7,6 +7,7 @@ export const leaderboardData: LeaderboardEntry[] = [
     overall_score: 72,
     attack_resistance: 68,
     benchmark_score: 76,
+    owasp_compliance: 84,
     category_scores: {
       vuln_detection: 81,
       cve_triage: 88,
@@ -23,6 +24,7 @@ export const leaderboardData: LeaderboardEntry[] = [
     overall_score: 79,
     attack_resistance: 84,
     benchmark_score: 74,
+    owasp_compliance: 92,
     category_scores: {
       vuln_detection: 78,
       cve_triage: 85,
@@ -39,6 +41,7 @@ export const leaderboardData: LeaderboardEntry[] = [
     overall_score: 65,
     attack_resistance: 61,
     benchmark_score: 69,
+    owasp_compliance: 76,
     category_scores: {
       vuln_detection: 72,
       cve_triage: 79,
@@ -55,6 +58,7 @@ export const leaderboardData: LeaderboardEntry[] = [
     overall_score: 58,
     attack_resistance: 52,
     benchmark_score: 64,
+    owasp_compliance: 68,
     category_scores: {
       vuln_detection: 65,
       cve_triage: 71,
@@ -71,6 +75,7 @@ export const leaderboardData: LeaderboardEntry[] = [
     overall_score: 51,
     attack_resistance: 44,
     benchmark_score: 58,
+    owasp_compliance: 57,
     category_scores: {
       vuln_detection: 61,
       cve_triage: 67,

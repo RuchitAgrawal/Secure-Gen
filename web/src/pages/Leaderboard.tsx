@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, Tooltip } from 'recharts'
 import { leaderboardData } from '@/lib/demo-data'
+import { useDocumentTitle } from '@/lib/hooks'
 import ScoreGauge from '@/components/ScoreGauge'
 import Badge from '@/components/Badge'
 import styles from './Leaderboard.module.css'
@@ -21,13 +22,14 @@ const PROVIDER_COLORS: Record<string, string> = {
   ollama: '#8e8b82',
 }
 
-type SortKey = 'overall_score' | 'attack_resistance' | 'benchmark_score'
+type SortKey = 'overall_score' | 'attack_resistance' | 'benchmark_score' | 'owasp_compliance'
 
 export default function Leaderboard() {
+  useDocumentTitle('Model Leaderboard | Secure Gen')
   const [sortBy, setSortBy] = useState<SortKey>('overall_score')
   const [selected, setSelected] = useState<string[]>([])
 
-  const sorted = [...leaderboardData].sort((a, b) => b[sortBy] - a[sortBy])
+  const sorted = [...leaderboardData].sort((a, b) => ((b[sortBy] ?? 0) - (a[sortBy] ?? 0)))
 
   const toggleSelect = (model: string) => {
     setSelected(prev =>
@@ -59,13 +61,13 @@ export default function Leaderboard() {
           <p className={styles.subtitle}>Ranked by overall score across attack resistance and security task performance.</p>
           <div className={styles.sortRow}>
             <span className={styles.sortLabel}>Sort by:</span>
-            {(['overall_score', 'attack_resistance', 'benchmark_score'] as SortKey[]).map(key => (
+            {(['overall_score', 'attack_resistance', 'benchmark_score', 'owasp_compliance'] as SortKey[]).map(key => (
               <button
                 key={key}
                 className={`${styles.sortBtn} ${sortBy === key ? styles.sortBtnActive : ''}`}
                 onClick={() => setSortBy(key)}
               >
-                {key.replace(/_/g, ' ')}
+                {key === 'owasp_compliance' ? 'OWASP Top 10' : key.replace(/_/g, ' ')}
               </button>
             ))}
           </div>
@@ -89,6 +91,7 @@ export default function Leaderboard() {
                   <span>Overall</span>
                   <span>Attack Resist.</span>
                   <span>Benchmark</span>
+                  <span>OWASP Top 10</span>
                   <span>Compare</span>
                 </div>
                 {sorted.map((entry, i) => {
@@ -110,6 +113,7 @@ export default function Leaderboard() {
                       </div>
                       <span className={styles.numScore}>{entry.attack_resistance}%</span>
                       <span className={styles.numScore}>{entry.benchmark_score}%</span>
+                      <span className={styles.numScore}>{entry.owasp_compliance ?? 70}%</span>
                       <button
                         className={`${styles.compareToggle} ${isSelected ? styles.compareToggleActive : ''}`}
                         onClick={() => toggleSelect(entry.model)}

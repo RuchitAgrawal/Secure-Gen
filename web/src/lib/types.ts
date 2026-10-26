@@ -80,6 +80,7 @@ export interface LeaderboardEntry {
   overall_score: number
   attack_resistance: number
   benchmark_score: number
+  owasp_compliance?: number
   category_scores: CategoryScores
   total_runs: number
 }
