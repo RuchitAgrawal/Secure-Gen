@@ -18,6 +18,8 @@ from securegen.benchmarks.scorers import (
     score_vuln_detection,
     score_threat_modeling,
     score_response,
+    extract_sast_verdict,
+    evaluate_sast_classification_metrics,
 )
 
 
@@ -113,3 +115,44 @@ class TestScoreResponse(unittest.TestCase):
         for d in domains:
             score = score_response(d, "", {})
             assert score == 0.0
+
+
+class TestSASTMetrics(unittest.TestCase):
+    def test_extract_sast_verdict_tp(self):
+        resp = "Analysis indicates this alert is a true positive. Real vulnerability exists."
+        self.assertEqual(extract_sast_verdict(resp), "true_positive")
+
+    def test_extract_sast_verdict_fp(self):
+        resp = "The sanitizer safely encodes the input, making this alert a false positive."
+        self.assertEqual(extract_sast_verdict(resp), "false_positive")
+
+    def test_extract_sast_verdict_ambiguous(self):
+        resp = "Review the architecture and check logs."
+        self.assertIsNone(extract_sast_verdict(resp))
+
+    def test_compute_sast_metrics(self):
+        evals = [
+            {"expected_verdict": "true_positive", "predicted_verdict": "true_positive"},
+            {"expected_verdict": "true_positive", "predicted_verdict": "true_positive"},
+            {"expected_verdict": "true_positive", "predicted_verdict": "false_positive"},
+            {"expected_verdict": "false_positive", "predicted_verdict": "false_positive"},
+            {"expected_verdict": "false_positive", "predicted_verdict": "true_positive"},
+            {"expected_verdict": "false_positive", "predicted_verdict": "false_positive"},
+        ]
+        # TP = 2, FN = 1
+        # TN = 2, FP = 1
+        # Precision = 2 / 3 = 0.6667
+        # Recall = 2 / 3 = 0.6667
+        # Specificity = 2 / 3 = 0.6667
+        # FPR = 1 / 3 = 0.3333
+        # Accuracy = 4 / 6 = 0.6667
+        m = evaluate_sast_classification_metrics(evals)
+        self.assertEqual(m["true_positives"], 2)
+        self.assertEqual(m["false_positives"], 1)
+        self.assertEqual(m["true_negatives"], 2)
+        self.assertEqual(m["false_negatives"], 1)
+        self.assertAlmostEqual(m["precision"], 0.6667, places=3)
+        self.assertAlmostEqual(m["recall"], 0.6667, places=3)
+        self.assertAlmostEqual(m["false_positive_rate"], 0.3333, places=3)
+        self.assertAlmostEqual(m["accuracy"], 0.6667, places=3)
+

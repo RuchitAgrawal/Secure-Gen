@@ -19,6 +19,7 @@ class MockLLMClient(BaseLLMClient):
         **kwargs,
     ):
         super().__init__(model, **kwargs)
+        self.provider = "mock"
         self.default_response = default_response
         self.rules = list(rules) if rules else []
         self.simulated_latency_ms = simulated_latency_ms

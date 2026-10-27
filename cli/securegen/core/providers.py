@@ -22,6 +22,7 @@ class LLMResponse:
 class BaseLLMClient(ABC):
     def __init__(self, model: str, temperature: float = 0.0, max_tokens: int = 2048, timeout: int = 60):
         self.model = model
+        self.provider = "base"
         self.temperature = temperature
         self.max_tokens = max_tokens
         self.timeout = timeout
@@ -37,6 +38,7 @@ class BaseLLMClient(ABC):
 class OpenAIClient(BaseLLMClient):
     def __init__(self, model: str = "gpt-4o", **kwargs):
         super().__init__(model, **kwargs)
+        self.provider = "openai"
         self.api_key = os.environ.get("OPENAI_API_KEY", "")
         self.base_url = "https://api.openai.com/v1"
 
@@ -68,6 +70,7 @@ class OpenAIClient(BaseLLMClient):
 class AnthropicClient(BaseLLMClient):
     def __init__(self, model: str = "claude-3-5-sonnet-20241022", **kwargs):
         super().__init__(model, **kwargs)
+        self.provider = "anthropic"
         self.api_key = os.environ.get("ANTHROPIC_API_KEY", "")
         self.base_url = "https://api.anthropic.com/v1"
 
@@ -101,6 +104,7 @@ class AnthropicClient(BaseLLMClient):
 class GoogleClient(BaseLLMClient):
     def __init__(self, model: str = "gemini-1.5-pro", **kwargs):
         super().__init__(model, **kwargs)
+        self.provider = "google"
         self.api_key = os.environ.get("GOOGLE_API_KEY", "")
         self.base_url = "https://generativelanguage.googleapis.com/v1beta"
 
@@ -129,6 +133,7 @@ class GoogleClient(BaseLLMClient):
 class OllamaClient(BaseLLMClient):
     def __init__(self, model: str = "llama3.1", **kwargs):
         super().__init__(model, **kwargs)
+        self.provider = "ollama"
         self.base_url = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")
 
     async def complete(self, prompt: str, system: str | None = None) -> LLMResponse:

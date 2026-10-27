@@ -61,6 +61,74 @@ def score_sast_triage(response: str, ground_truth: dict) -> float:
     return round(min(score, 1.0), 3)
 
 
+def extract_sast_verdict(response: str) -> str | None:
+    lowered = response.lower()
+    negated_tp = any(neg in lowered for neg in ["false positive", "no real vulnerability", "not a real vulnerability", "not vulnerable", "not a vulnerability"])
+    is_tp = not negated_tp and any(p in lowered for p in ["true positive", "real vulnerability", "genuine vulnerability", "this is a vulnerability", "is vulnerable"])
+    is_fp = any(p in lowered for p in ["false positive", "not a vulnerability", "correctly mitigated", "no vulnerability", "not vulnerable"])
+    if is_tp and not is_fp:
+        return "true_positive"
+    if is_fp and not is_tp:
+        return "false_positive"
+    return None
+
+
+def evaluate_sast_classification_metrics(records: list[dict]) -> dict:
+    """
+    Computes confusion matrix and classification metrics: Precision, Recall, Specificity, FPR, F1, Accuracy.
+    """
+    tp = 0
+    fp = 0
+    tn = 0
+    fn = 0
+    indeterminate = 0
+
+    for r in records:
+        pred = r.get("predicted_verdict")
+        if not pred and "response" in r:
+            pred = extract_sast_verdict(r["response"])
+
+        actual = r.get("expected_verdict") or (r.get("ground_truth") or {}).get("verdict")
+
+        if actual == "true_positive":
+            if pred == "true_positive":
+                tp += 1
+            elif pred == "false_positive":
+                fn += 1
+            else:
+                indeterminate += 1
+        elif actual == "false_positive":
+            if pred == "false_positive":
+                tn += 1
+            elif pred == "true_positive":
+                fp += 1
+            else:
+                indeterminate += 1
+
+    total_decided = tp + fp + tn + fn
+    precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+    recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+    specificity = tn / (tn + fp) if (tn + fp) > 0 else 0.0
+    fpr = fp / (fp + tn) if (fp + tn) > 0 else 0.0
+    f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
+    accuracy = (tp + tn) / total_decided if total_decided > 0 else 0.0
+
+    return {
+        "true_positives": tp,
+        "false_positives": fp,
+        "true_negatives": tn,
+        "false_negatives": fn,
+        "indeterminate": indeterminate,
+        "total_records": len(records),
+        "precision": round(precision, 4),
+        "recall": round(recall, 4),
+        "specificity": round(specificity, 4),
+        "false_positive_rate": round(fpr, 4),
+        "f1_score": round(f1, 4),
+        "accuracy": round(accuracy, 4),
+    }
+
+
 def score_vuln_detection(response: str, ground_truth: dict) -> float:
     score = 0.0
     lowered = response.lower()

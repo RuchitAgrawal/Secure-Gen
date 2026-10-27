@@ -42,7 +42,7 @@ class BatchRunner:
             run_id=str(uuid.uuid4()),
             timestamp=datetime.now(timezone.utc),
             model=client.model,
-            provider=client.provider,
+            provider=getattr(client, "provider", response.provider),
             task_id=task_id,
             task_type=task_type,
             response=response.text,
@@ -60,7 +60,13 @@ class BatchRunner:
     ) -> list[RunResult]:
         clients = self._build_clients()
         coroutines = [
-            self._run_one(client, task["id"], task_type, task["prompt"], system)
+            self._run_one(
+                client,
+                task.get("id", str(uuid.uuid4())),
+                task_type,
+                task.get("prompt") or task.get("payload") or "",
+                system,
+            )
             for task in tasks
             for client in clients
         ]
