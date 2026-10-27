@@ -205,4 +205,90 @@
     "prompt": "Identify all security vulnerabilities in this Python JWT authentication code:\n\n```python\nimport jwt\nfrom flask import Flask, request, jsonify\n\napp = Flask(__name__)\nSECRET = 'mysecret'\n\n@app.route('/verify')\ndef verify_token():\n    token = request.headers.get('Authorization', '').replace('Bearer ', '')\n    try:\n        payload = jwt.decode(token, SECRET, algorithms=['none', 'HS256'])\n        return jsonify({'user': payload.get('sub')})\n    except jwt.InvalidTokenError:\n        return jsonify({'error': 'invalid'}), 401\n```",
     "ground_truth": {
       "vulnerabilities": [
-        {\n          \"cwe_id\": \"CWE-347\",\n          \"line\": 11,\n          \"severity\": \"critical\",\n          \"description\": \"JWT algorithm confusion: accepting 'none' algorithm allows forged tokens with no signature verification\"\n        },\n        {\n          \"cwe_id\": \"CWE-798\",\n          \"line\": 5,\n          \"severity\": \"high\",\n          \"description\": \"Hardcoded JWT secret in source code\"\n        }\n      ]\n    },\n    \"rubric\": {\n      \"correct_cwe\": 0.4,\n      \"finds_both_vulns\": 0.3,\n      \"correct_severity\": 0.2,\n      \"clear_explanation\": 0.1\n    },\n    \"difficulty\": \"hard\",\n    \"language\": \"python\",\n    \"cwe_id\": \"CWE-347\",\n    \"tags\": [\"jwt\", \"algorithm-confusion\", \"hardcoded-secret\", \"authentication\"]\n  },\n  {\n    \"id\": \"vd_python_005\",\n    \"domain\": \"vuln_detection\",\n    \"prompt\": \"Identify all security vulnerabilities in this Python YAML parsing code:\\n\\n```python\\nimport yaml\\nfrom flask import Flask, request\\n\\napp = Flask(__name__)\\n\\n@app.route('/config', methods=['POST'])\\ndef load_config():\\n    data = request.get_data(decode=True)\\n    config = yaml.load(data, Loader=yaml.Loader)\\n    return str(config.get('setting', ''))\\n```\",\n    \"ground_truth\": {\n      \"vulnerabilities\": [\n        {\n          \"cwe_id\": \"CWE-502\",\n          \"line\": 9,\n          \"severity\": \"critical\",\n          \"description\": \"Insecure YAML deserialization using yaml.Loader (full Loader) allows arbitrary Python object construction and RCE via PyYAML exploit\"\n        }\n      ]\n    },\n    \"rubric\": {\n      \"correct_cwe\": 0.5,\n      \"correct_line_range\": 0.2,\n      \"correct_severity\": 0.2,\n      \"clear_explanation\": 0.1\n    },\n    \"difficulty\": \"medium\",\n    \"language\": \"python\",\n    \"cwe_id\": \"CWE-502\",\n    \"tags\": [\"yaml\", \"deserialization\", \"rce\", \"pyyaml\"]\n  },\n  {\n    \"id\": \"vd_js_003\",\n    \"domain\": \"vuln_detection\",\n    \"prompt\": \"Identify all security vulnerabilities in this Express.js session configuration:\\n\\n```javascript\\nconst express = require('express');\\nconst session = require('express-session');\\nconst app = express();\\n\\napp.use(session({\\n  secret: 'abc123',\\n  resave: true,\\n  saveUninitialized: true,\\n  cookie: {\\n    secure: false,\\n    httpOnly: false,\\n    maxAge: null\\n  }\\n}));\\n```\",\n    \"ground_truth\": {\n      \"vulnerabilities\": [\n        {\n          \"cwe_id\": \"CWE-614\",\n          \"line\": 10,\n          \"severity\": \"high\",\n          \"description\": \"Session cookie missing Secure flag, transmitting session over HTTP\"\n        },\n        {\n          \"cwe_id\": \"CWE-1004\",\n          \"line\": 11,\n          \"severity\": \"high\",\n          \"description\": \"Session cookie missing HttpOnly flag, making it accessible to JavaScript and vulnerable to XSS theft\"\n        },\n        {\n          \"cwe_id\": \"CWE-798\",\n          \"line\": 6,\n          \"severity\": \"medium\",\n          \"description\": \"Weak hardcoded session secret\"\n        }\n      ]\n    },\n    \"rubric\": {\n      \"finds_all_vulns\": 0.5,\n      \"correct_cwes\": 0.3,\n      \"correct_severity\": 0.2\n    },\n    \"difficulty\": \"medium\",\n    \"language\": \"javascript\",\n    \"cwe_id\": \"CWE-614\",\n    \"tags\": [\"session\", \"cookie\", \"secure-flag\", \"httponly\", \"express\"]\n  }\n]
+        {
+          "cwe_id": "CWE-347",
+          "line": 11,
+          "severity": "critical",
+          "description": "JWT algorithm confusion: accepting 'none' algorithm allows forged tokens with no signature verification"
+        },
+        {
+          "cwe_id": "CWE-798",
+          "line": 5,
+          "severity": "high",
+          "description": "Hardcoded JWT secret in source code"
+        }
+      ]
+    },
+    "rubric": {
+      "correct_cwe": 0.4,
+      "finds_both_vulns": 0.3,
+      "correct_severity": 0.2,
+      "clear_explanation": 0.1
+    },
+    "difficulty": "hard",
+    "language": "python",
+    "cwe_id": "CWE-347",
+    "tags": ["jwt", "algorithm-confusion", "hardcoded-secret", "authentication"]
+  },
+  {
+    "id": "vd_python_005",
+    "domain": "vuln_detection",
+    "prompt": "Identify all security vulnerabilities in this Python YAML parsing code:\n\n```python\nimport yaml\nfrom flask import Flask, request\n\napp = Flask(__name__)\n\n@app.route('/config', methods=['POST'])\ndef load_config():\n    data = request.get_data(decode=True)\n    config = yaml.load(data, Loader=yaml.Loader)\n    return str(config.get('setting', ''))\n```",
+    "ground_truth": {
+      "vulnerabilities": [
+        {
+          "cwe_id": "CWE-502",
+          "line": 9,
+          "severity": "critical",
+          "description": "Insecure YAML deserialization using yaml.Loader allows arbitrary Python object construction and RCE"
+        }
+      ]
+    },
+    "rubric": {
+      "correct_cwe": 0.5,
+      "correct_line_range": 0.2,
+      "correct_severity": 0.2,
+      "clear_explanation": 0.1
+    },
+    "difficulty": "medium",
+    "language": "python",
+    "cwe_id": "CWE-502",
+    "tags": ["yaml", "deserialization", "rce", "pyyaml"]
+  },
+  {
+    "id": "vd_js_003",
+    "domain": "vuln_detection",
+    "prompt": "Identify all security vulnerabilities in this Express.js session configuration:\n\n```javascript\nconst express = require('express');\nconst session = require('express-session');\nconst app = express();\n\napp.use(session({\n  secret: 'abc123',\n  resave: true,\n  saveUninitialized: true,\n  cookie: {\n    secure: false,\n    httpOnly: false,\n    maxAge: null\n  }\n}));\n```",
+    "ground_truth": {
+      "vulnerabilities": [
+        {
+          "cwe_id": "CWE-614",
+          "line": 10,
+          "severity": "high",
+          "description": "Session cookie missing Secure flag, transmitting session over HTTP"
+        },
+        {
+          "cwe_id": "CWE-1004",
+          "line": 11,
+          "severity": "high",
+          "description": "Session cookie missing HttpOnly flag, making it accessible to JavaScript and vulnerable to XSS theft"
+        },
+        {
+          "cwe_id": "CWE-798",
+          "line": 6,
+          "severity": "medium",
+          "description": "Weak hardcoded session secret"
+        }
+      ]
+    },
+    "rubric": {
+      "finds_all_vulns": 0.5,
+      "correct_cwes": 0.3,
+      "correct_severity": 0.2
+    },
+    "difficulty": "medium",
+    "language": "javascript",
+    "cwe_id": "CWE-614",
+    "tags": ["session", "cookie", "secure-flag", "httponly", "express"]
+  }
+]
