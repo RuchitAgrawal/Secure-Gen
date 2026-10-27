@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 import os
+import socket
 from pathlib import Path
 from typing import Any
-import urllib.request
-import urllib.error
 
 
 def check_env_api_keys() -> dict[str, bool]:
@@ -15,12 +14,14 @@ def check_env_api_keys() -> dict[str, bool]:
     }
 
 
-def check_ollama_connectivity(endpoint: str = "http://localhost:11434") -> bool:
+def check_ollama_connectivity(endpoint: str = "localhost:11434") -> bool:
+    host, _, port_str = endpoint.rpartition(":")
+    host = host.replace("http://", "").replace("https://", "")
+    port = int(port_str) if port_str.isdigit() else 11434
     try:
-        req = urllib.request.Request(f"{endpoint}/api/tags", headers={"User-Agent": "SecureGen-Check"})
-        with urllib.request.urlopen(req, timeout=1.5) as resp:
-            return resp.status == 200
-    except (urllib.error.URLError, TimeoutError, OSError):
+        with socket.create_connection((host, port), timeout=1.5):
+            return True
+    except OSError:
         return False
 
 
