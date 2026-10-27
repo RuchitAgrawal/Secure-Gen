@@ -261,5 +261,36 @@ def data_export(
         console.print(f"[green]Successfully exported {count} records to JSONL: {output}[/green]")
 
 
+@app.command("check")
+def system_check(
+    datasets: Path = typer.Option(Path("datasets"), "--datasets", "-d", help="Path to datasets root"),
+):
+    """Run environment diagnostics and verify API key configurations."""
+    from securegen.core.diagnostics import run_system_diagnostics
+
+    diag = run_system_diagnostics(datasets)
+    table = Table(title="Secure Gen Environment Diagnostics")
+    table.add_column("Component", style="cyan")
+    table.add_column("Status", style="bold")
+    table.add_column("Details", style="dim")
+
+    for key, present in diag["api_keys"].items():
+        status = "[green]Configured[/green]" if present else "[yellow]Missing[/yellow]"
+        table.add_row(key, status, "Loaded from environment" if present else "Set via .env or export")
+
+    ollama_status = "[green]Connected[/green]" if diag["ollama_connected"] else "[dim]Not running[/dim]"
+    table.add_row("Local Ollama Server", ollama_status, "http://localhost:11434")
+
+    ds = diag["datasets"]
+    ds_status = f"[green]{ds['total_files']} files[/green]" if ds["exists"] else "[red]Not found[/red]"
+    table.add_row("Datasets Inventory", ds_status, f"Found in {datasets}")
+
+    console.print(table)
+    if diag["overall_ready"]:
+        console.print("[green]Ready: System is prepared for evaluations.[/green]")
+    else:
+        console.print("[yellow]Notice: Provide at least one API key to execute live model evaluations.[/yellow]")
+
+
 if __name__ == "__main__":
     app()
