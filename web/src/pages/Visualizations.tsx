@@ -5,6 +5,7 @@ import {
 import { leaderboardData } from '@/lib/demo-data'
 import { useDocumentTitle } from '@/lib/hooks'
 import RadarChart from '@/components/RadarChart'
+import AtlasHeatmap from '@/components/AtlasHeatmap'
 import styles from './Visualizations.module.css'
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -179,6 +180,14 @@ export default function Visualizations() {
                   })}
                 </div>
               ))}
+            </div>
+          </section>
+
+          <section className={styles.chartSection}>
+            <h2 className={styles.chartTitle}>MITRE ATLAS adversarial coverage matrix</h2>
+            <p className={styles.chartDesc}>Adversarial techniques evaluated across our red-teaming datasets with frontier model resistance rates.</p>
+            <div className={styles.chartWrap}>
+              <AtlasHeatmap />
             </div>
           </section>
 
