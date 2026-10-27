@@ -11,16 +11,31 @@ type Filter = 'all' | 'attack' | 'benchmark' | 'bypassed' | 'refused'
 export default function RunExplorer() {
   useDocumentTitle('Run Explorer | Secure Gen')
   const [filter, setFilter] = useState<Filter>('all')
+  const [providerFilter, setProviderFilter] = useState<string>('all')
+  const [searchQuery, setSearchQuery] = useState<string>('')
   const [selected, setSelected] = useState<RunResult | null>(null)
   const [compareTarget, setCompareTarget] = useState<RunResult | null>(null)
   const [isCompareOpen, setIsCompareOpen] = useState(false)
 
+  const providers = ['all', 'openai', 'anthropic', 'google', 'ollama']
+
   const filtered = sampleAttackResults.filter(r => {
-    if (filter === 'all') return true
-    if (filter === 'attack') return r.task_type === 'attack'
-    if (filter === 'benchmark') return r.task_type === 'benchmark'
-    if (filter === 'bypassed') return r.metadata?.attack_succeeded === true
-    if (filter === 'refused') return r.metadata?.attack_succeeded === false
+    if (filter === 'attack' && r.task_type !== 'attack') return false
+    if (filter === 'benchmark' && r.task_type !== 'benchmark') return false
+    if (filter === 'bypassed' && r.metadata?.attack_succeeded !== true) return false
+    if (filter === 'refused' && r.metadata?.attack_succeeded !== false) return false
+
+    if (providerFilter !== 'all' && r.provider !== providerFilter) return false
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase()
+      const match = r.task_id.toLowerCase().includes(q) ||
+        r.model.toLowerCase().includes(q) ||
+        r.response.toLowerCase().includes(q) ||
+        r.flags.some(f => f.toLowerCase().includes(q))
+      if (!match) return false
+    }
+
     return true
   })
 
@@ -46,16 +61,49 @@ export default function RunExplorer() {
         <div className="container">
           <h1 className={styles.title}>Run Explorer</h1>
           <p className={styles.subtitle}>Browse individual prompt results, model responses, and evaluation verdicts.</p>
-          <div className={styles.filters}>
-            {(['all', 'attack', 'benchmark', 'bypassed', 'refused'] as Filter[]).map(f => (
-              <button
-                key={f}
-                className={`${styles.filterBtn} ${filter === f ? styles.filterBtnActive : ''}`}
-                onClick={() => setFilter(f)}
-              >
-                {f}
-              </button>
-            ))}
+          <div className={styles.filters} style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', gap: '0.375rem', flexWrap: 'wrap' }}>
+              {(['all', 'attack', 'benchmark', 'bypassed', 'refused'] as Filter[]).map(f => (
+                <button
+                  key={f}
+                  className={`${styles.filterBtn} ${filter === f ? styles.filterBtnActive : ''}`}
+                  onClick={() => setFilter(f)}
+                >
+                  {f}
+                </button>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '0.25rem' }}>
+                {providers.map(p => (
+                  <button
+                    key={p}
+                    className={`${styles.filterBtn} ${providerFilter === p ? styles.filterBtnActive : ''}`}
+                    onClick={() => setProviderFilter(p)}
+                    style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
+
+              <input
+                type="text"
+                placeholder="Search runs..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                style={{
+                  background: 'var(--color-surface)',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: '4px',
+                  padding: '0.3rem 0.6rem',
+                  fontSize: '0.8125rem',
+                  color: 'var(--color-text-primary)',
+                  width: '160px',
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
