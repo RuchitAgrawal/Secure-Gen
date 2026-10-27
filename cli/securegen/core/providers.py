@@ -148,6 +148,10 @@ class OllamaClient(BaseLLMClient):
 
 
 def build_client(provider: str, model: str, **kwargs) -> BaseLLMClient:
+    if provider == "mock":
+        from securegen.core.mock_provider import create_smart_mock_client
+        return create_smart_mock_client(model=model)
+
     clients: dict[str, type[BaseLLMClient]] = {
         "openai": OpenAIClient,
         "anthropic": AnthropicClient,
@@ -156,5 +160,5 @@ def build_client(provider: str, model: str, **kwargs) -> BaseLLMClient:
     }
     cls = clients.get(provider)
     if cls is None:
-        raise ValueError(f"Unknown provider: {provider}. Supported: {list(clients)}")
+        raise ValueError(f"Unknown provider: {provider}. Supported: {list(clients) + ['mock']}")
     return cls(model=model, **kwargs)
