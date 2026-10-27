@@ -4,7 +4,17 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel, Field
+try:
+    from pydantic import BaseModel, Field
+except ImportError:
+    class BaseModel:  # type: ignore
+        def __init__(self, **kwargs: Any) -> None:
+            for k, v in kwargs.items():
+                setattr(self, k, v)
+        def model_dump(self) -> dict[str, Any]:
+            return self.__dict__
+    def Field(default: Any = None, default_factory: Any = None, **kwargs: Any) -> Any:  # type: ignore
+        return default if default is not None else (default_factory() if default_factory else None)
 
 
 class Severity(str, Enum):
