@@ -5,7 +5,10 @@ import os
 import time
 from abc import ABC, abstractmethod
 
-import httpx
+try:
+    import httpx
+except ImportError:
+    httpx = None  # type: ignore
 
 
 class LLMResponse:
