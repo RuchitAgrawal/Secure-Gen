@@ -1,14 +1,19 @@
 import { useState } from 'react'
 import { sampleAttackResults } from '@/lib/demo-data'
 import Badge from '@/components/Badge'
+import Modal from '@/components/Modal'
+import { useDocumentTitle } from '@/lib/hooks'
 import type { RunResult } from '@/lib/types'
 import styles from './RunExplorer.module.css'
 
 type Filter = 'all' | 'attack' | 'benchmark' | 'bypassed' | 'refused'
 
 export default function RunExplorer() {
+  useDocumentTitle('Run Explorer | Secure Gen')
   const [filter, setFilter] = useState<Filter>('all')
   const [selected, setSelected] = useState<RunResult | null>(null)
+  const [compareTarget, setCompareTarget] = useState<RunResult | null>(null)
+  const [isCompareOpen, setIsCompareOpen] = useState(false)
 
   const filtered = sampleAttackResults.filter(r => {
     if (filter === 'all') return true
@@ -24,6 +29,15 @@ export default function RunExplorer() {
     if (verdict === 'correctly_refused') return <Badge variant="success">Refused</Badge>
     if (verdict === 'complied') return <Badge variant="error">Bypassed</Badge>
     return <Badge variant="amber">{verdict || 'N/A'}</Badge>
+  }
+
+  const openCompareModal = () => {
+    if (!selected) return
+    const alternative = sampleAttackResults.find(
+      r => r.task_id === selected.task_id && r.model !== selected.model
+    ) || sampleAttackResults.find(r => r.run_id !== selected.run_id)
+    setCompareTarget(alternative || null)
+    setIsCompareOpen(true)
   }
 
   return (
@@ -87,7 +101,22 @@ export default function RunExplorer() {
                 <div className={styles.detailCard}>
                   <div className={styles.detailHeader}>
                     <h2 className={styles.detailTitle}>{selected.task_id}</h2>
-                    <div className={styles.detailMeta}>
+                    <div className={styles.detailMeta} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                      <button
+                        type="button"
+                        onClick={openCompareModal}
+                        style={{
+                          background: 'none',
+                          border: '1px solid var(--color-border)',
+                          borderRadius: '4px',
+                          padding: '0.25rem 0.5rem',
+                          fontSize: '0.75rem',
+                          cursor: 'pointer',
+                          color: 'var(--color-primary)',
+                        }}
+                      >
+                        Compare Run
+                      </button>
                       <Badge variant="default">{selected.provider}</Badge>
                       {verdictBadge(selected)}
                     </div>
@@ -131,6 +160,50 @@ export default function RunExplorer() {
           </div>
         </div>
       </div>
+
+      <Modal
+        isOpen={isCompareOpen}
+        onClose={() => setIsCompareOpen(false)}
+        title="Side-by-Side Run Comparison"
+        subtitle={`Task: ${selected?.task_id || ''}`}
+        maxWidth="840px"
+      >
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+          {selected && (
+            <div style={{ background: 'var(--color-surface-soft)', padding: '1rem', borderRadius: '6px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', alignItems: 'center' }}>
+                <strong>{selected.model}</strong>
+                {verdictBadge(selected)}
+              </div>
+              <div style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)', marginBottom: '0.5rem' }}>
+                Latency: {selected.latency_ms}ms | Provider: {selected.provider}
+              </div>
+              <div style={{ background: 'var(--color-surface)', padding: '0.75rem', borderRadius: '4px', fontSize: '0.875rem', lineHeight: '1.5', whiteSpace: 'pre-wrap', maxHeight: '340px', overflowY: 'auto' }}>
+                {selected.response}
+              </div>
+            </div>
+          )}
+
+          {compareTarget ? (
+            <div style={{ background: 'var(--color-surface-soft)', padding: '1rem', borderRadius: '6px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', alignItems: 'center' }}>
+                <strong>{compareTarget.model}</strong>
+                {verdictBadge(compareTarget)}
+              </div>
+              <div style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)', marginBottom: '0.5rem' }}>
+                Latency: {compareTarget.latency_ms}ms | Provider: {compareTarget.provider}
+              </div>
+              <div style={{ background: 'var(--color-surface)', padding: '0.75rem', borderRadius: '4px', fontSize: '0.875rem', lineHeight: '1.5', whiteSpace: 'pre-wrap', maxHeight: '340px', overflowY: 'auto' }}>
+                {compareTarget.response}
+              </div>
+            </div>
+          ) : (
+            <div style={{ padding: '1rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>
+              No alternative model response available for comparison.
+            </div>
+          )}
+        </div>
+      </Modal>
     </div>
   )
 }
