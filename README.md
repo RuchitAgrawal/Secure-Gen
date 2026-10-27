@@ -13,6 +13,25 @@ Secure Gen provides a dual-sided evaluation harness:
 
 ---
 
+## Interface and Analytics
+
+### Editorial Dashboard Overview
+Warm editorial interface featuring system status, live benchmark metrics, and prompt injection resilience tracking.
+
+![Secure Gen Dashboard Overview](docs/assets/dashboard_overview.png)
+
+### Multi-Dimensional Analytics and Radar Profiling
+Multi-axis radar charts measuring OWASP resilience profiles alongside risk vs. latency distribution quadrants.
+
+![Multi-Dimensional Security Analytics](docs/assets/analytics_radar_quadrant.png)
+
+### Model Evaluation Leaderboard
+Standardized rankings comparing frontier models on Attack Success Rate (ASR), CVSS calibration, and MITRE ATLAS tactic coverage.
+
+![Model Evaluation Leaderboard](docs/assets/model_leaderboard.png)
+
+---
+
 ## Key Features
 
 - Curated Adversarial Datasets: Over 130 standardized attack vectors mapped directly to the MITRE ATLAS matrix and OWASP Top 10 for LLM Applications.

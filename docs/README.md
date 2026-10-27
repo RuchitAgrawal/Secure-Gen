@@ -75,3 +75,22 @@ Guidelines for adding new attack vectors and benchmark scenarios:
   |    139 JSON Prompts & Tasks | CSV, JSONL, HTML Reports    |
   +-----------------------------------------------------------+
 ```
+
+---
+
+## Visual Overview and Dashboard Analytics
+
+### Editorial Dashboard Overview
+Warm editorial interface showcasing system readiness, live metric cards, and resilience tracking.
+
+![Secure Gen Dashboard](assets/dashboard_overview.png)
+
+### Multi-Dimensional Analytics and Radar Chart
+Interactive radar profiling across OWASP categories and risk versus latency scatter quadrants.
+
+![Visualizations and Analytics](assets/analytics_radar_quadrant.png)
+
+### Benchmark Leaderboard
+Standardized model comparisons displaying Attack Success Rate (ASR) rings, CVSS calibration, and MITRE ATLAS tactic mapping.
+
+![Model Leaderboard](assets/model_leaderboard.png)
