@@ -59,6 +59,8 @@
   --spacing-section: 96px;
 
   --shadow-subtle: 0 1px 3px rgba(20, 20, 19, 0.08);
+  --shadow-lg: 0 10px 25px -5px rgba(20, 18, 16, 0.1), 0 8px 10px -6px rgba(20, 18, 16, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(20, 18, 16, 0.14), 0 8px 10px -6px rgba(20, 18, 16, 0.1);
   --max-width: 1200px;
 
   --transition-fast: 150ms ease;
@@ -78,6 +80,16 @@ body {
   font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.55;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+::selection {
+  background-color: var(--color-primary);
+  color: #ffffff;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -129,4 +141,13 @@ img, svg { display: block; max-width: 100%; }
   h3 { font-size: 24px; letter-spacing: -0.3px; }
   h4 { font-size: 20px; }
   .container { padding: 0 var(--spacing-md); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
