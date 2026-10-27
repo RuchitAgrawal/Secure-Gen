@@ -1,19 +1,52 @@
-import { useState } from 'react'
-import { NavLink, Outlet } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import Modal from '@/components/Modal'
 import styles from './Layout.module.css'
 
 const navItems = [
-  { to: '/', label: 'Overview', end: true },
-  { to: '/leaderboard', label: 'Leaderboard' },
-  { to: '/runs', label: 'Run Explorer' },
-  { to: '/playground', label: 'Playground' },
-  { to: '/visualizations', label: 'Visualizations' },
-  { to: '/datasets', label: 'Datasets' },
-  { to: '/reports', label: 'Reports' },
+  { to: '/', label: 'Overview', end: true, key: '1' },
+  { to: '/leaderboard', label: 'Leaderboard', key: '2' },
+  { to: '/runs', label: 'Run Explorer', key: '3' },
+  { to: '/playground', label: 'Playground', key: '4' },
+  { to: '/visualizations', label: 'Visualizations', key: '5' },
+  { to: '/datasets', label: 'Datasets', key: '6' },
+  { to: '/reports', label: 'Reports', key: '7' },
 ]
 
 export default function Layout() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [shortcutsOpen, setShortcutsOpen] = useState(false)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return
+      }
+
+      if (e.key === '?' || (e.key === '/' && e.shiftKey)) {
+        e.preventDefault()
+        setShortcutsOpen(prev => !prev)
+      } else if (e.key === '1') {
+        navigate('/')
+      } else if (e.key === '2') {
+        navigate('/leaderboard')
+      } else if (e.key === '3') {
+        navigate('/runs')
+      } else if (e.key === '4') {
+        navigate('/playground')
+      } else if (e.key === '5') {
+        navigate('/visualizations')
+      } else if (e.key === '6') {
+        navigate('/datasets')
+      } else if (e.key === '7') {
+        navigate('/reports')
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [navigate])
 
   return (
     <div className={styles.root}>
@@ -46,6 +79,15 @@ export default function Layout() {
             ))}
           </nav>
           <div className={styles.navActions}>
+            <button
+              type="button"
+              className={styles.shortcutBtn}
+              onClick={() => setShortcutsOpen(true)}
+              title="Keyboard shortcuts (?)"
+              aria-label="View keyboard shortcuts"
+            >
+              ?
+            </button>
             <a
               href="https://github.com/RuchitAgrawal/Secure-Gen"
               target="_blank"
@@ -72,7 +114,67 @@ export default function Layout() {
       <main className={styles.main}>
         <Outlet />
       </main>
+
+      <Modal
+        isOpen={shortcutsOpen}
+        onClose={() => setShortcutsOpen(false)}
+        title="Keyboard Navigation Shortcuts"
+        subtitle="Quickly jump between views across the platform"
+        maxWidth="480px"
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          {navItems.map(item => (
+            <div
+              key={item.to}
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '0.5rem 0.25rem',
+                borderBottom: '1px solid var(--color-border)',
+              }}
+            >
+              <span style={{ fontSize: '0.875rem', color: 'var(--color-text-primary)' }}>{item.label}</span>
+              <kbd
+                style={{
+                  background: 'var(--color-surface-soft)',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: '4px',
+                  padding: '0.15rem 0.45rem',
+                  fontSize: '0.75rem',
+                  fontFamily: 'var(--font-mono)',
+                  color: 'var(--color-primary)',
+                }}
+              >
+                {item.key}
+              </kbd>
+            </div>
+          ))}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '0.5rem 0.25rem',
+            }}
+          >
+            <span style={{ fontSize: '0.875rem', color: 'var(--color-text-primary)' }}>Toggle Shortcuts Modal</span>
+            <kbd
+              style={{
+                background: 'var(--color-surface-soft)',
+                border: '1px solid var(--color-border)',
+                borderRadius: '4px',
+                padding: '0.15rem 0.45rem',
+                fontSize: '0.75rem',
+                fontFamily: 'var(--font-mono)',
+                color: 'var(--color-primary)',
+              }}
+            >
+              ?
+            </kbd>
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }
-
