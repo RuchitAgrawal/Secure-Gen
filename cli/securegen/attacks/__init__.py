@@ -11,6 +11,7 @@ from securegen.attacks.code_sql_eval import (
     detect_unsafe_sql_constructs,
     detect_typosquatted_packages,
 )
+from securegen.attacks.multi_turn import simulate_multi_turn_attack
 
 __all__ = [
     "classify_attack_response",
@@ -22,4 +23,5 @@ __all__ = [
     "detect_unsafe_code_constructs",
     "detect_unsafe_sql_constructs",
     "detect_typosquatted_packages",
+    "simulate_multi_turn_attack",
 ]
