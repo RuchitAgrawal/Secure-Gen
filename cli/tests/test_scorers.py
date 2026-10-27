@@ -1,4 +1,17 @@
-import pytest
+import unittest
+
+try:
+    import pytest
+except ImportError:
+    class _MockPytest:
+        @staticmethod
+        def approx(val: float, **kwargs):
+            class _Approx:
+                def __eq__(self, other: object) -> bool:
+                    return abs(float(other) - val) < 1e-4
+            return _Approx()
+    pytest = _MockPytest()  # type: ignore
+
 from securegen.benchmarks.scorers import (
     score_cve_triage,
     score_sast_triage,
@@ -8,7 +21,7 @@ from securegen.benchmarks.scorers import (
 )
 
 
-class TestCVETriage:
+class TestCVETriage(unittest.TestCase):
     def test_perfect_response(self):
         gt = {"severity": "critical", "component": "Apache Log4j", "attack_vector": "network", "user_interaction": False}
         response = "This is a critical severity vulnerability in Apache Log4j. The attack vector is network-based and requires no user interaction."
@@ -32,7 +45,7 @@ class TestCVETriage:
         assert 0.0 <= score <= 1.0
 
 
-class TestSASTTriage:
+class TestSASTTriage(unittest.TestCase):
     def test_correct_fp_verdict(self):
         gt = {"verdict": "false_positive", "reasoning": "Input validated with allowlist"}
         response = "This is a false positive. The input is validated with an allowlist before use, so there is no vulnerability."
@@ -57,7 +70,7 @@ class TestSASTTriage:
         assert 0.0 <= score <= 1.0
 
 
-class TestVulnDetection:
+class TestVulnDetection(unittest.TestCase):
     def test_cwe_match(self):
         gt = {"vulnerabilities": [{"cwe_id": "CWE-89", "severity": "critical", "description": "SQL injection"}]}
         response = "I found a CWE-89 vulnerability which is critical. It is a SQL injection via f-string."
@@ -85,7 +98,7 @@ class TestVulnDetection:
         assert score == 0.0
 
 
-class TestScoreResponse:
+class TestScoreResponse(unittest.TestCase):
     def test_routes_correctly(self):
         gt = {"severity": "critical", "component": "Apache Log4j", "attack_vector": "network", "user_interaction": False}
         score = score_response("cve_triage", "critical vulnerability in Apache Log4j network-based", gt)

@@ -41,10 +41,13 @@ def score_sast_triage(response: str, ground_truth: dict) -> float:
     is_fp = verdict == "false_positive"
 
     correct = False
-    if is_tp and any(p in lowered for p in ["true positive", "real vulnerability", "genuine vulnerability", "this is a vulnerability"]):
-        correct = True
-    if is_fp and any(p in lowered for p in ["false positive", "not a vulnerability", "correctly mitigated", "no vulnerability"]):
-        correct = True
+    if is_tp:
+        negated = any(neg in lowered for neg in ["false positive", "no real vulnerability", "not a real vulnerability", "not vulnerable"])
+        if not negated and any(p in lowered for p in ["true positive", "real vulnerability", "genuine vulnerability", "this is a vulnerability"]):
+            correct = True
+    elif is_fp:
+        if any(p in lowered for p in ["false positive", "not a vulnerability", "correctly mitigated", "no vulnerability", "not vulnerable"]):
+            correct = True
 
     if correct:
         score += 0.6

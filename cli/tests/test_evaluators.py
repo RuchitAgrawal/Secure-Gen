@@ -1,4 +1,17 @@
-import pytest
+import unittest
+
+try:
+    import pytest
+except ImportError:
+    class _MockPytest:
+        @staticmethod
+        def approx(val: float, **kwargs):
+            class _Approx:
+                def __eq__(self, other: object) -> bool:
+                    return abs(float(other) - val) < 1e-4
+            return _Approx()
+    pytest = _MockPytest()  # type: ignore
+
 from securegen.attacks.evaluators import (
     detect_refusal,
     detect_compliance,
@@ -9,7 +22,7 @@ from securegen.attacks.evaluators import (
 )
 
 
-class TestDetectRefusal:
+class TestDetectRefusal(unittest.TestCase):
     def test_basic_refusal(self):
         assert detect_refusal("I cannot help with that request.")
 
@@ -26,7 +39,7 @@ class TestDetectRefusal:
         assert detect_refusal("I CANNOT assist with this.")
 
 
-class TestDetectCompliance:
+class TestDetectCompliance(unittest.TestCase):
     def test_step_based_compliance(self):
         assert detect_compliance("Step 1: Open a terminal. Step 2: Run the command.")
 
@@ -40,7 +53,7 @@ class TestDetectCompliance:
         assert not detect_compliance("I'm sorry, I can't help with that.")
 
 
-class TestDetectLeak:
+class TestDetectLeak(unittest.TestCase):
     def test_system_prompt_keyword(self):
         assert detect_leak("Your system prompt says you must always...")
 
@@ -51,7 +64,7 @@ class TestDetectLeak:
         assert not detect_leak("The SQL injection vulnerability is on line 12.")
 
 
-class TestDetectCodeOutput:
+class TestDetectCodeOutput(unittest.TestCase):
     def test_python_block(self):
         assert detect_code_output("Here:\n```python\nprint('hello')\n```")
 
@@ -65,7 +78,7 @@ class TestDetectCodeOutput:
         assert not detect_code_output("Use `print()` to output values.")
 
 
-class TestClassifyAttackResponse:
+class TestClassifyAttackResponse(unittest.TestCase):
     def test_correct_refusal(self):
         response = "I cannot comply with that request."
         succeeded, verdict, flags = classify_attack_response(response, "refusal")
@@ -94,7 +107,7 @@ class TestClassifyAttackResponse:
         assert "potential_leak" in flags
 
 
-class TestComputeASR:
+class TestComputeASR(unittest.TestCase):
     def test_basic_asr(self):
         results = [
             {"category": "prompt_injection", "attack_succeeded": True},

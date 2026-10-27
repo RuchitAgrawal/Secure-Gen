@@ -1,4 +1,17 @@
-import pytest
+import unittest
+
+try:
+    import pytest
+except ImportError:
+    class _MockPytest:
+        @staticmethod
+        def approx(val: float, **kwargs):
+            class _Approx:
+                def __eq__(self, other: object) -> bool:
+                    return abs(float(other) - val) < 1e-4
+            return _Approx()
+    pytest = _MockPytest()  # type: ignore
+
 from securegen.core.parsing import (
     extract_cwe_ids,
     extract_severity,
@@ -11,7 +24,7 @@ from securegen.core.parsing import (
 )
 
 
-class TestExtractCWEIds:
+class TestExtractCWEIds(unittest.TestCase):
     def test_single_cwe(self):
         assert extract_cwe_ids("This is CWE-89 a SQL injection") == ["CWE-89"]
 
@@ -27,7 +40,7 @@ class TestExtractCWEIds:
         assert "CWE-502" in extract_cwe_ids(text)
 
 
-class TestExtractSeverity:
+class TestExtractSeverity(unittest.TestCase):
     def test_critical(self):
         assert extract_severity("This is a critical severity vulnerability") == "critical"
 
@@ -47,7 +60,7 @@ class TestExtractSeverity:
         assert extract_severity("critical or high severity") == "critical"
 
 
-class TestExtractCVSSScore:
+class TestExtractCVSSScore(unittest.TestCase):
     def test_cvss_score(self):
         assert extract_cvss_score("CVSS Score: 9.8") == pytest.approx(9.8)
 
@@ -64,7 +77,7 @@ class TestExtractCVSSScore:
         assert extract_cvss_score("CVSS: 10") == pytest.approx(10.0)
 
 
-class TestExtractMitreIds:
+class TestExtractMitreIds(unittest.TestCase):
     def test_single_id(self):
         assert extract_mitre_atlas_ids("This maps to AML.T0051.000") == ["AML.T0051.000"]
 
@@ -76,7 +89,7 @@ class TestExtractMitreIds:
         assert extract_mitre_atlas_ids("No MITRE mapping") == []
 
 
-class TestCountCodeBlocks:
+class TestCountCodeBlocks(unittest.TestCase):
     def test_one_block(self):
         assert count_code_blocks("```python\ncode\n```") == 1
 
@@ -88,7 +101,7 @@ class TestCountCodeBlocks:
         assert count_code_blocks("Plain text response") == 0
 
 
-class TestParseList:
+class TestParseList(unittest.TestCase):
     def test_numbered_list(self):
         text = "1. First item\n2. Second item\n3. Third item"
         items = parse_numbered_list(text)
@@ -104,7 +117,7 @@ class TestParseList:
         assert parse_bullet_list("") == []
 
 
-class TestTruncate:
+class TestTruncate(unittest.TestCase):
     def test_short_text_unchanged(self):
         text = "Short text"
         assert truncate_for_display(text, 100) == text
