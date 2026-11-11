@@ -5,10 +5,10 @@ import Badge from '@/components/Badge'
 import styles from './Home.module.css'
 
 const STATS = [
-  { value: '70+', label: 'Attack prompts' },
-  { value: '34', label: 'Benchmark tasks' },
-  { value: '5', label: 'LLM models evaluated' },
-  { value: '425', label: 'Total runs' },
+  { value: '130+', label: 'Adversarial vectors (MITRE-mapped)' },
+  { value: '34', label: 'Defensive benchmark tasks' },
+  { value: '5', label: 'Frontier models · 3 providers' },
+  { value: '425', label: 'Evaluation runs · CI green' },
 ]
 
 export default function Home() {
@@ -18,13 +18,13 @@ export default function Home() {
         <div className={`container ${styles.heroInner}`}>
           <div className={styles.heroContent}>
             <Badge variant="default" uppercase className={styles.heroBadge}>
-              Security Research
+              LLM Security Research
             </Badge>
             <h1 className={styles.heroTitle}>
-              Red-team and benchmark LLMs on real security tasks
+              LLM Behavioral Simulation &amp; Adversarial Evaluation Harness
             </h1>
             <p className={styles.heroSub}>
-              Secure Gen is an open framework for evaluating how well frontier models resist adversarial attacks and perform on vulnerability detection, CVE triage, SAST analysis, and threat modeling.
+              An asynchronous platform for cross-model LLM ablations, adversarial benchmarking, and human-centered security analytics. Covers MITRE ATLAS tactics, OWASP Top 10 for LLMs, and CWE-grounded defensive benchmarks.
             </p>
             <div className={styles.heroActions}>
               <Link to="/playground" className={styles.ctaPrimary}>
