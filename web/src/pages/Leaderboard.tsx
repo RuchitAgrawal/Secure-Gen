@@ -27,7 +27,7 @@ type SortKey = 'overall_score' | 'attack_resistance' | 'benchmark_score' | 'owas
 export default function Leaderboard() {
   useDocumentTitle('Model Leaderboard | Secure Gen')
   const [sortBy, setSortBy] = useState<SortKey>('overall_score')
-  const [selected, setSelected] = useState<string[]>([])
+  const [selected, setSelected] = useState<string[]>(['gpt-4o', 'claude-3-5-sonnet-20241022'])
 
   const sorted = [...leaderboardData].sort((a, b) => ((b[sortBy] ?? 0) - (a[sortBy] ?? 0)))
 
@@ -80,7 +80,10 @@ export default function Leaderboard() {
             <div className={styles.tableSection}>
               {selected.length > 0 && (
                 <div className={styles.compareHint}>
-                  {selected.length} model{selected.length > 1 ? 's' : ''} selected for comparison
+                  {selected.length} model{selected.length > 1 ? 's' : ''} selected for radar comparison
+                  {selected.length === 2 && selected.includes('gpt-4o') && selected.includes('claude-3-5-sonnet-20241022') && (
+                    <span style={{ marginLeft: 8, fontWeight: 400, opacity: 0.7 }}>· pre-selected: top 2 by overall score</span>
+                  )}
                   <button className={styles.clearBtn} onClick={() => setSelected([])}>Clear</button>
                 </div>
               )}
