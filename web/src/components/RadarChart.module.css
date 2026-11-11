@@ -13,13 +13,13 @@
 
 .webRing {
   fill: none;
-  stroke: var(--color-border);
+  stroke: var(--color-hairline);
   stroke-dasharray: 2 3;
   stroke-width: 1;
 }
 
 .axisLine {
-  stroke: var(--color-border);
+  stroke: var(--color-hairline);
   stroke-width: 1;
 }
 
@@ -27,7 +27,7 @@
   font-family: var(--font-body);
   font-size: 0.6875rem;
   font-weight: 500;
-  fill: var(--color-text-secondary);
+  fill: var(--color-muted);
 }
 
 .seriesPolygon {
@@ -46,7 +46,7 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.8125rem;
-  color: var(--color-text-primary);
+  color: var(--color-ink);
 }
 
 .legendColor {

@@ -65,6 +65,17 @@
 
   --transition-fast: 150ms ease;
   --transition-base: 200ms ease;
+
+  /* Design system compatibility tokens */
+  --color-surface: var(--color-canvas);
+  --color-border: var(--color-hairline);
+  --color-text-primary: var(--color-ink);
+  --color-text-secondary: var(--color-body);
+  --color-text-muted: var(--color-muted);
+  --radius-xs: var(--rounded-xs);
+  --radius-sm: var(--rounded-sm);
+  --radius-md: var(--rounded-md);
+  --radius-lg: var(--rounded-lg);
 }
 
 html {

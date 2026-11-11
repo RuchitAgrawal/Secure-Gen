@@ -15,12 +15,12 @@
   align-items: center;
   gap: 0.625rem;
   padding: 0.75rem 1rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  background: var(--color-canvas);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--rounded-md);
   box-shadow: var(--shadow-lg);
   font-size: 0.875rem;
-  color: var(--color-text-primary);
+  color: var(--color-ink);
   animation: slideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   min-width: 240px;
   max-width: 380px;

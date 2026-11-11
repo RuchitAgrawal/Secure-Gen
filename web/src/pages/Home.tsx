@@ -183,7 +183,7 @@ export default function Home() {
                   <line x1="13.66" y1="2.34" x2="2.34" y2="13.66" stroke="currentColor" strokeWidth="1.5"/>
                 </svg>
               </span>
-              <span>Secure Gen &mdash; Built by Ruchit Agrawal</span>
+              <span>Secure Gen (Built by Ruchit Agrawal)</span>
             </div>
             <div className={styles.footerLinks}>
               <Link to="/methodology">Methodology</Link>
