@@ -111,6 +111,18 @@ export default function Layout() {
           </div>
         </div>
       </header>
+      <div className={styles.demoBanner}>
+        <span className={styles.demoDot} />
+        Pre-computed demo data &mdash; 5 frontier models &nbsp;&middot;&nbsp; 85 runs per model &nbsp;&middot;&nbsp; Oct 2026 &nbsp;&middot;&nbsp; Temperature 0.0
+        <a
+          href="https://github.com/RuchitAgrawal/Secure-Gen"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.demoBannerLink}
+        >
+          View source ↗
+        </a>
+      </div>
       <main className={styles.main}>
         <Outlet />
       </main>
