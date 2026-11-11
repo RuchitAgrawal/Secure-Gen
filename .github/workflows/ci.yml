@@ -8,6 +8,7 @@ on:
 
 jobs:
   python-tests:
+    name: Python Test Suite
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22,6 +23,7 @@ jobs:
         run: PYTHONPATH=. python -m unittest discover tests -v
 
   frontend-build:
+    name: Frontend Build and Typecheck
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -41,6 +43,7 @@ jobs:
         run: npm run build
 
   dataset-validation:
+    name: Dataset Schema Verification
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -64,3 +67,16 @@ jobs:
               print('\n'.join(errors)); sys.exit(1)
           print('All datasets valid')
           "
+
+  security-scan:
+    name: Bandit AST Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Bandit
+        run: pip install bandit
+      - name: Run Bandit on CLI code
+        run: bandit -r cli/securegen -lll -iii

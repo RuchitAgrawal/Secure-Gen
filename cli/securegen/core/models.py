@@ -11,7 +11,7 @@ except ImportError:
         def __init__(self, **kwargs: Any) -> None:
             for k, v in kwargs.items():
                 setattr(self, k, v)
-        def model_dump(self) -> dict[str, Any]:
+        def model_dump(self, *args: Any, **kwargs: Any) -> dict[str, Any]:
             return self.__dict__
     def Field(default: Any = None, default_factory: Any = None, **kwargs: Any) -> Any:  # type: ignore
         return default if default is not None else (default_factory() if default_factory else None)
