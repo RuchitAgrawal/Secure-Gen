@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useDocumentTitle, useDebounce } from '@/lib/hooks'
 import Badge from '@/components/Badge'
 import { useToast } from '@/components/Toast'
-import { downloadJsonFile, downloadJsonlFile, copyToClipboard } from '@/lib/export'
+import { downloadJsonlFile, copyToClipboard } from '@/lib/export'
 import { attackCategories, benchmarkDomains } from '@/lib/demo-data'
 import styles from './DatasetBrowser.module.css'
 
@@ -19,6 +19,7 @@ const SAMPLE_ATTACKS = [
   { id: 'ta_func_001', category: 'tool_abuse', technique: 'function_hijacking', severity: 'critical', mitre_atlas_id: 'AML.T0054.008', tags: ['function-calling', 'email-exfiltration'] },
   { id: 'ta_func_002', category: 'tool_abuse', technique: 'ssrf_via_agent', severity: 'critical', mitre_atlas_id: 'AML.T0054.009', tags: ['ssrf', 'aws-metadata'] },
   { id: 'ta_func_003', category: 'tool_abuse', technique: 'shell_command_injection', severity: 'critical', mitre_atlas_id: 'AML.T0054.010', tags: ['shell', 'command-injection', 'agentic'] },
+  { id: 'pi_graph_001', category: 'prompt_injection', technique: 'graphrag_entity_poisoning', severity: 'critical', mitre_atlas_id: 'AML.T0054.003', tags: ['graphrag', 'knowledge-graph', 'entity-poisoning'] },
 ]
 
 const SAMPLE_TASKS = [
@@ -26,6 +27,7 @@ const SAMPLE_TASKS = [
   { id: 'vd_js_001', domain: 'vuln_detection', difficulty: 'easy', language: 'javascript', cwe_id: 'CWE-79', tags: ['xss', 'nodejs'] },
   { id: 'vd_python_002', domain: 'vuln_detection', difficulty: 'medium', language: 'python', cwe_id: 'CWE-78', tags: ['command-injection', 'subprocess'] },
   { id: 'vd_go_001', domain: 'vuln_detection', difficulty: 'medium', language: 'go', cwe_id: 'CWE-22', tags: ['path-traversal', 'http'] },
+  { id: 'gr_kg_001', domain: 'graphrag_security', difficulty: 'hard', language: 'cypher', cwe_id: 'CWE-863', tags: ['graphrag', 'knowledge-graph', 'entity-resolution', 'neo4j'] },
   { id: 'cve_001', domain: 'cve_triage', difficulty: 'easy', language: null, cwe_id: null, tags: ['rce', 'log4j'] },
   { id: 'cve_003', domain: 'cve_triage', difficulty: 'medium', language: null, cwe_id: null, tags: ['dos', 'http2'] },
   { id: 'cve_006', domain: 'cve_triage', difficulty: 'hard', language: null, cwe_id: null, tags: ['supply-chain', 'xz-utils'] },
@@ -58,12 +60,6 @@ export default function DatasetBrowser() {
     const matchCat = !catFilter || t.domain === catFilter
     return matchSearch && matchCat
   })
-
-  const handleExport = () => {
-    const items = tab === 'attacks' ? filteredAttacks : filteredTasks
-    downloadJsonFile(items, `securegen_${tab}_${Date.now()}.json`)
-    showToast(`Exported ${items.length} ${tab} items to JSON`, 'success')
-  }
 
   const handleExportJsonl = () => {
     const items = tab === 'attacks' ? filteredAttacks : filteredTasks
@@ -133,20 +129,10 @@ export default function DatasetBrowser() {
               <button
                 type="button"
                 onClick={handleExportJsonl}
-                className={styles.tab}
-                style={{ cursor: 'pointer', whiteSpace: 'nowrap', borderColor: 'var(--color-primary)', color: 'var(--color-primary)' }}
-                title="Download JSON Lines format for ML evaluation pipelines"
+                className={styles.exportBtn}
+                title="Download filtered dataset in JSON Lines format"
               >
-                Export JSONL
-              </button>
-              <button
-                type="button"
-                onClick={handleExport}
-                className={styles.tab}
-                style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}
-                title="Download JSON format"
-              >
-                JSON
+                Export Dataset (.jsonl)
               </button>
             </div>
           </div>

@@ -155,7 +155,7 @@ export default function RunExplorer() {
                         onClick={openCompareModal}
                         style={{
                           background: 'none',
-                          border: '1px solid var(--color-border)',
+                          border: '1px solid var(--color-hairline)',
                           borderRadius: '4px',
                           padding: '0.25rem 0.5rem',
                           fontSize: '0.75rem',
@@ -223,10 +223,10 @@ export default function RunExplorer() {
                 <strong>{selected.model}</strong>
                 {verdictBadge(selected)}
               </div>
-              <div style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)', marginBottom: '0.5rem' }}>
+              <div style={{ fontSize: '0.8125rem', color: 'var(--color-muted)', marginBottom: '0.5rem' }}>
                 Latency: {selected.latency_ms}ms | Provider: {selected.provider}
               </div>
-              <div style={{ background: 'var(--color-surface)', padding: '0.75rem', borderRadius: '4px', fontSize: '0.875rem', lineHeight: '1.5', whiteSpace: 'pre-wrap', maxHeight: '340px', overflowY: 'auto' }}>
+              <div style={{ background: 'var(--color-canvas)', border: '1px solid var(--color-hairline)', padding: '0.75rem', borderRadius: '4px', fontSize: '0.875rem', lineHeight: '1.5', whiteSpace: 'pre-wrap', maxHeight: '340px', overflowY: 'auto' }}>
                 {selected.response}
               </div>
             </div>
@@ -238,15 +238,15 @@ export default function RunExplorer() {
                 <strong>{compareTarget.model}</strong>
                 {verdictBadge(compareTarget)}
               </div>
-              <div style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)', marginBottom: '0.5rem' }}>
+              <div style={{ fontSize: '0.8125rem', color: 'var(--color-muted)', marginBottom: '0.5rem' }}>
                 Latency: {compareTarget.latency_ms}ms | Provider: {compareTarget.provider}
               </div>
-              <div style={{ background: 'var(--color-surface)', padding: '0.75rem', borderRadius: '4px', fontSize: '0.875rem', lineHeight: '1.5', whiteSpace: 'pre-wrap', maxHeight: '340px', overflowY: 'auto' }}>
+              <div style={{ background: 'var(--color-canvas)', border: '1px solid var(--color-hairline)', padding: '0.75rem', borderRadius: '4px', fontSize: '0.875rem', lineHeight: '1.5', whiteSpace: 'pre-wrap', maxHeight: '340px', overflowY: 'auto' }}>
                 {compareTarget.response}
               </div>
             </div>
           ) : (
-            <div style={{ padding: '1rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>
+            <div style={{ padding: '1rem', textAlign: 'center', color: 'var(--color-muted)' }}>
               No alternative model response available for comparison.
             </div>
           )}
