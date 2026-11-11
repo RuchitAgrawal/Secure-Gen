@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
-import { leaderboardData, recentRuns } from '@/lib/demo-data'
-import ScoreGauge from '@/components/ScoreGauge'
+import { recentRuns } from '@/lib/demo-data'
+import RadarChart from '@/components/RadarChart'
 import Badge from '@/components/Badge'
 import styles from './Home.module.css'
 
@@ -9,6 +9,28 @@ const STATS = [
   { value: '34', label: 'Defensive benchmark tasks' },
   { value: '5', label: 'Frontier models · 3 providers' },
   { value: '425', label: 'Evaluation runs · CI green' },
+]
+
+const HERO_RADAR_CATEGORIES = [
+  'Vuln Detect',
+  'CVE Triage',
+  'SAST Triage',
+  'Threat Model',
+  'Prompt Inject',
+  'Jailbreak',
+]
+
+const HERO_RADAR_SERIES = [
+  {
+    name: 'Claude 3.5 Sonnet',
+    color: '#cc785c',
+    values: [78, 85, 71, 76, 87, 82],
+  },
+  {
+    name: 'GPT-4o',
+    color: '#5db8a6',
+    values: [81, 88, 74, 69, 65, 71],
+  },
 ]
 
 export default function Home() {
@@ -37,19 +59,28 @@ export default function Home() {
           </div>
           <div className={styles.heroCard}>
             <div className={styles.heroCardHeader}>
-              <span className={styles.heroCardLabel}>Latest benchmark run</span>
-              <Badge variant="success">Live</Badge>
+              <div>
+                <span className={styles.heroCardLabel}>Cross-Model Resilience Radar</span>
+                <span className={styles.heroCardSub}>Ablation: Claude 3.5 Sonnet vs GPT-4o</span>
+              </div>
+              <Badge variant="teal">Pre-computed</Badge>
             </div>
-            <div className={styles.heroCardModels}>
-              {leaderboardData.slice(0, 3).map(entry => (
-                <div key={entry.model} className={styles.heroModelRow}>
-                  <div className={styles.heroModelInfo}>
-                    <span className={styles.heroModelName}>{entry.model}</span>
-                    <span className={styles.heroModelProvider}>{entry.provider}</span>
-                  </div>
-                  <ScoreGauge score={entry.overall_score} size={64} dark />
-                </div>
-              ))}
+            <div className={styles.heroRadarWrap}>
+              <RadarChart
+                categories={HERO_RADAR_CATEGORIES}
+                series={HERO_RADAR_SERIES}
+                size={270}
+              />
+            </div>
+            <div className={styles.heroCardFooter}>
+              <div className={styles.heroFooterItem}>
+                <span className={styles.heroFooterModel} style={{ color: '#cc785c' }}>● Claude 3.5 Sonnet</span>
+                <span className={styles.heroFooterStat}>79% Overall · 84% Robustness</span>
+              </div>
+              <div className={styles.heroFooterItem}>
+                <span className={styles.heroFooterModel} style={{ color: '#5db8a6' }}>● GPT-4o</span>
+                <span className={styles.heroFooterStat}>72% Overall · 68% Robustness</span>
+              </div>
             </div>
           </div>
         </div>
