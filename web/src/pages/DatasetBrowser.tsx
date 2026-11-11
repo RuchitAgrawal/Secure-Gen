@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useDocumentTitle, useDebounce } from '@/lib/hooks'
 import Badge from '@/components/Badge'
 import { useToast } from '@/components/Toast'
-import { downloadJsonFile, copyToClipboard } from '@/lib/export'
+import { downloadJsonFile, downloadJsonlFile, copyToClipboard } from '@/lib/export'
 import { attackCategories, benchmarkDomains } from '@/lib/demo-data'
 import styles from './DatasetBrowser.module.css'
 
@@ -65,6 +65,12 @@ export default function DatasetBrowser() {
     showToast(`Exported ${items.length} ${tab} items to JSON`, 'success')
   }
 
+  const handleExportJsonl = () => {
+    const items = tab === 'attacks' ? filteredAttacks : filteredTasks
+    downloadJsonlFile(items, `securegen_${tab}_${Date.now()}.jsonl`)
+    showToast(`Exported ${items.length} ${tab} items to JSONL`, 'success')
+  }
+
   const handleCopyId = async (id: string) => {
     const ok = await copyToClipboard(id)
     if (ok) showToast(`Copied ${id} to clipboard`, 'info')
@@ -115,7 +121,7 @@ export default function DatasetBrowser() {
                 Benchmark Tasks ({filteredTasks.length})
               </button>
             </div>
-            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
               <input
                 className={styles.search}
                 type="search"
@@ -126,11 +132,21 @@ export default function DatasetBrowser() {
               />
               <button
                 type="button"
-                onClick={handleExport}
+                onClick={handleExportJsonl}
                 className={styles.tab}
                 style={{ cursor: 'pointer', whiteSpace: 'nowrap', borderColor: 'var(--color-primary)', color: 'var(--color-primary)' }}
+                title="Download JSON Lines format for ML evaluation pipelines"
               >
-                Export JSON
+                Export JSONL
+              </button>
+              <button
+                type="button"
+                onClick={handleExport}
+                className={styles.tab}
+                style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}
+                title="Download JSON format"
+              >
+                JSON
               </button>
             </div>
           </div>
