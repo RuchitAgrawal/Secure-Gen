@@ -55,17 +55,24 @@ export default function Layout() {
     <div className={styles.root}>
       <header className={styles.nav}>
         <div className={styles.navInner}>
-          <NavLink to="/" className={styles.wordmark} onClick={() => setMenuOpen(false)}>
-            <span className={styles.spike} aria-hidden="true">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <line x1="8" y1="0" x2="8" y2="16" stroke="currentColor" strokeWidth="1.5" />
-                <line x1="0" y1="8" x2="16" y2="8" stroke="currentColor" strokeWidth="1.5" />
-                <line x1="2.34" y1="2.34" x2="13.66" y2="13.66" stroke="currentColor" strokeWidth="1.5" />
-                <line x1="13.66" y1="2.34" x2="2.34" y2="13.66" stroke="currentColor" strokeWidth="1.5" />
-              </svg>
-            </span>
-            Secure Gen
-          </NavLink>
+          <div className={styles.brandGroup}>
+            <NavLink to="/" className={styles.wordmark} onClick={() => setMenuOpen(false)}>
+              <span className={styles.spike} aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <line x1="8" y1="0" x2="8" y2="16" stroke="currentColor" strokeWidth="1.5" />
+                  <line x1="0" y1="8" x2="16" y2="8" stroke="currentColor" strokeWidth="1.5" />
+                  <line x1="2.34" y1="2.34" x2="13.66" y2="13.66" stroke="currentColor" strokeWidth="1.5" />
+                  <line x1="13.66" y1="2.34" x2="2.34" y2="13.66" stroke="currentColor" strokeWidth="1.5" />
+                </svg>
+              </span>
+              Secure Gen
+            </NavLink>
+            <div className={styles.releaseBadge} title="Evaluation run: Nov 2026 (Zero-shot, T=0.0, 5 models)">
+              <span className={styles.releaseTag}>v1.0</span>
+              <span className={styles.releaseDivider}>/</span>
+              <span className={styles.releaseDate}>Nov 2026</span>
+            </div>
+          </div>
           <nav className={`${styles.navLinks} ${menuOpen ? styles.navLinksOpen : ''}`} aria-label="Main navigation">
             {navItems.map(item => (
               <NavLink
@@ -100,9 +107,6 @@ export default function Layout() {
             >
               GitHub
             </a>
-            <NavLink to="/playground" className={styles.ctaButton}>
-              Try Playground
-            </NavLink>
             <button
               className={styles.menuToggle}
               onClick={() => setMenuOpen(o => !o)}
@@ -114,18 +118,6 @@ export default function Layout() {
           </div>
         </div>
       </header>
-      <div className={styles.demoBanner}>
-        <span className={styles.demoDot} />
-        Pre-computed demo data &mdash; 5 frontier models &nbsp;&middot;&nbsp; 85 runs per model &nbsp;&middot;&nbsp; Oct 2026 &nbsp;&middot;&nbsp; Temperature 0.0
-        <a
-          href="https://github.com/RuchitAgrawal/Secure-Gen"
-          target="_blank"
-          rel="noopener noreferrer"
-          className={styles.demoBannerLink}
-        >
-          View source ↗
-        </a>
-      </div>
       <main className={styles.main}>
         <Outlet />
       </main>
@@ -146,14 +138,14 @@ export default function Layout() {
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 padding: '0.5rem 0.25rem',
-                borderBottom: '1px solid var(--color-border)',
+                borderBottom: '1px solid var(--color-hairline)',
               }}
             >
-              <span style={{ fontSize: '0.875rem', color: 'var(--color-text-primary)' }}>{item.label}</span>
+              <span style={{ fontSize: '0.875rem', color: 'var(--color-ink)', fontWeight: 500 }}>{item.label}</span>
               <kbd
                 style={{
                   background: 'var(--color-surface-soft)',
-                  border: '1px solid var(--color-border)',
+                  border: '1px solid var(--color-hairline)',
                   borderRadius: '4px',
                   padding: '0.15rem 0.45rem',
                   fontSize: '0.75rem',
@@ -173,11 +165,11 @@ export default function Layout() {
               padding: '0.5rem 0.25rem',
             }}
           >
-            <span style={{ fontSize: '0.875rem', color: 'var(--color-text-primary)' }}>Toggle Shortcuts Modal</span>
+            <span style={{ fontSize: '0.875rem', color: 'var(--color-ink)', fontWeight: 500 }}>Toggle Shortcuts Modal</span>
             <kbd
               style={{
                 background: 'var(--color-surface-soft)',
-                border: '1px solid var(--color-border)',
+                border: '1px solid var(--color-hairline)',
                 borderRadius: '4px',
                 padding: '0.15rem 0.45rem',
                 fontSize: '0.75rem',

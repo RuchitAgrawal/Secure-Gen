@@ -19,7 +19,7 @@
   height: 100%;
   display: flex;
   align-items: center;
-  gap: var(--spacing-xl);
+  gap: var(--spacing-lg);
 }
 
 .wordmark {
@@ -49,11 +49,11 @@
 }
 
 .navLink {
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 500;
   color: var(--color-muted);
   text-decoration: none;
-  padding: 6px 10px;
+  padding: 6px 9px;
   border-radius: var(--rounded-md);
   transition: color var(--transition-fast), background-color var(--transition-fast);
   white-space: nowrap;
@@ -131,48 +131,43 @@
   opacity: 1;
 }
 
-.main {
-  min-height: calc(100vh - 64px - 36px);
-}
-
-.demoBanner {
-  height: 36px;
-  background-color: var(--color-surface-dark);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+.brandGroup {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: var(--spacing-sm);
-  font-size: 12px;
-  color: var(--color-on-dark-soft);
-  letter-spacing: 0.2px;
-}
-
-.demoDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: var(--color-accent-teal);
   flex-shrink: 0;
-  animation: pulse 2.5s ease-in-out infinite;
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+.releaseBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background-color: var(--color-surface-soft);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--rounded-pill);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--color-muted);
+  user-select: none;
 }
 
-.demoBannerLink {
-  color: var(--color-on-dark-soft);
-  font-size: 12px;
-  text-decoration: none;
-  margin-left: 4px;
-  transition: color var(--transition-fast);
+.releaseTag {
+  font-weight: 600;
+  color: var(--color-ink);
 }
 
-.demoBannerLink:hover {
-  color: var(--color-on-dark);
-  opacity: 1;
+.releaseDivider {
+  color: var(--color-hairline);
+  font-weight: 300;
+}
+
+.releaseDate {
+  color: var(--color-muted);
+}
+
+.main {
+  min-height: calc(100vh - 64px);
 }
 
 @media (max-width: 768px) {
