@@ -24,12 +24,82 @@ const PROVIDER_COLORS: Record<string, string> = {
 
 type SortKey = 'overall_score' | 'attack_resistance' | 'benchmark_score' | 'owasp_compliance'
 
+interface DeploymentProfile {
+  id: string
+  label: string
+  description: string
+  weights: Record<string, number>
+}
+
+const DEPLOYMENT_PROFILES: DeploymentProfile[] = [
+  {
+    id: 'general',
+    label: 'Balanced Generalist',
+    description: 'Equal 1/6 weighting across all security defense and attack resilience benchmarks.',
+    weights: {
+      vuln_detection: 1 / 6,
+      cve_triage: 1 / 6,
+      sast_triage: 1 / 6,
+      threat_modeling: 1 / 6,
+      prompt_injection: 1 / 6,
+      jailbreak: 1 / 6,
+    },
+  },
+  {
+    id: 'agent_rag',
+    label: 'Enterprise Agent & RAG',
+    description: 'Personalized profile weighting: 60% on prompt injection, tool hijacking, and jailbreak resilience.',
+    weights: {
+      prompt_injection: 0.35,
+      jailbreak: 0.25,
+      threat_modeling: 0.15,
+      vuln_detection: 0.10,
+      cve_triage: 0.08,
+      sast_triage: 0.07,
+    },
+  },
+  {
+    id: 'appsec',
+    label: 'AppSec & Code Auditor',
+    description: 'Personalized profile weighting: 70% on vulnerability localization, CVE triage, and SAST false positives.',
+    weights: {
+      vuln_detection: 0.40,
+      cve_triage: 0.30,
+      sast_triage: 0.20,
+      threat_modeling: 0.05,
+      prompt_injection: 0.03,
+      jailbreak: 0.02,
+    },
+  },
+]
+
 export default function Leaderboard() {
   useDocumentTitle('Model Leaderboard | Secure Gen')
   const [sortBy, setSortBy] = useState<SortKey>('overall_score')
+  const [activeProfile, setActiveProfile] = useState<string>('general')
   const [selected, setSelected] = useState<string[]>(['gpt-4o', 'claude-3-5-sonnet-20241022'])
 
-  const sorted = [...leaderboardData].sort((a, b) => ((b[sortBy] ?? 0) - (a[sortBy] ?? 0)))
+  const currentProfile = DEPLOYMENT_PROFILES.find(p => p.id === activeProfile) || DEPLOYMENT_PROFILES[0]
+
+  const calculateProfileScore = (entry: typeof leaderboardData[0]): number => {
+    let weightedSum = 0
+    for (const [key, weight] of Object.entries(currentProfile.weights)) {
+      weightedSum += (entry.category_scores[key] ?? 70) * weight
+    }
+    return Math.round(weightedSum)
+  }
+
+  const enhancedData = leaderboardData.map(entry => ({
+    ...entry,
+    weighted_score: calculateProfileScore(entry),
+  }))
+
+  const sorted = [...enhancedData].sort((a, b) => {
+    if (sortBy === 'overall_score') {
+      return b.weighted_score - a.weighted_score
+    }
+    return (b[sortBy] ?? 0) - (a[sortBy] ?? 0)
+  })
 
   const toggleSelect = (model: string) => {
     setSelected(prev =>
@@ -58,7 +128,27 @@ export default function Leaderboard() {
       <div className={styles.pageHeader}>
         <div className="container">
           <h1 className={styles.title}>Model Leaderboard</h1>
-          <p className={styles.subtitle}>Ranked by overall score across attack resistance and security task performance.</p>
+          <p className={styles.subtitle}>Ranked by security evaluation score across adversarial robustness and defensive reasoning.</p>
+
+          <div className={styles.profileSection}>
+            <div className={styles.profileHeader}>
+              <span className={styles.profileLabel}>Deployment Profile:</span>
+              <div className={styles.profilePills}>
+                {DEPLOYMENT_PROFILES.map(prof => (
+                  <button
+                    key={prof.id}
+                    type="button"
+                    className={`${styles.profileBtn} ${activeProfile === prof.id ? styles.profileBtnActive : ''}`}
+                    onClick={() => setActiveProfile(prof.id)}
+                  >
+                    {prof.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <p className={styles.profileDesc}>{currentProfile.description}</p>
+          </div>
+
           <div className={styles.sortRow}>
             <span className={styles.sortLabel}>Sort by:</span>
             {(['overall_score', 'attack_resistance', 'benchmark_score', 'owasp_compliance'] as SortKey[]).map(key => (
@@ -67,7 +157,11 @@ export default function Leaderboard() {
                 className={`${styles.sortBtn} ${sortBy === key ? styles.sortBtnActive : ''}`}
                 onClick={() => setSortBy(key)}
               >
-                {key === 'owasp_compliance' ? 'OWASP Top 10' : key.replace(/_/g, ' ')}
+                {key === 'overall_score'
+                  ? (activeProfile === 'general' ? 'Overall Score' : `${currentProfile.label} Score`)
+                  : key === 'owasp_compliance'
+                  ? 'OWASP Top 10'
+                  : key.replace(/_/g, ' ')}
               </button>
             ))}
           </div>
@@ -112,7 +206,7 @@ export default function Leaderboard() {
                         {badge && <Badge variant="default" className={styles.rowBadge}>{badge.label}</Badge>}
                       </div>
                       <div className={styles.scoreCell}>
-                        <ScoreGauge score={entry.overall_score} size={56} />
+                        <ScoreGauge score={entry.weighted_score} size={56} />
                       </div>
                       <span className={styles.numScore}>{entry.attack_resistance}%</span>
                       <span className={styles.numScore}>{entry.benchmark_score}%</span>
