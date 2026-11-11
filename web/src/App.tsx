@@ -11,6 +11,7 @@ const Playground = lazy(() => import('@/pages/Playground'))
 const Visualizations = lazy(() => import('@/pages/Visualizations'))
 const DatasetBrowser = lazy(() => import('@/pages/DatasetBrowser'))
 const Reports = lazy(() => import('@/pages/Reports'))
+const Methodology = lazy(() => import('@/pages/Methodology'))
 
 function PageFallback() {
   return (
@@ -72,6 +73,14 @@ export default function App() {
               element={
                 <Suspense fallback={<PageFallback />}>
                   <Reports />
+                </Suspense>
+              }
+            />
+            <Route
+              path="methodology"
+              element={
+                <Suspense fallback={<PageFallback />}>
+                  <Methodology />
                 </Suspense>
               }
             />

@@ -11,6 +11,7 @@ const navItems = [
   { to: '/visualizations', label: 'Visualizations', key: '5' },
   { to: '/datasets', label: 'Datasets', key: '6' },
   { to: '/reports', label: 'Reports', key: '7' },
+  { to: '/methodology', label: 'Methodology', key: '8' },
 ]
 
 export default function Layout() {
@@ -41,6 +42,8 @@ export default function Layout() {
         navigate('/datasets')
       } else if (e.key === '7') {
         navigate('/reports')
+      } else if (e.key === '8') {
+        navigate('/methodology')
       }
     }
 

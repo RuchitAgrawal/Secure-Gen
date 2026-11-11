@@ -186,9 +186,10 @@ export default function Home() {
               Secure Gen
             </div>
             <div className={styles.footerLinks}>
-              <a href="https://github.com/RuchitAgrawal/Secure-Gen" target="_blank" rel="noopener noreferrer">GitHub</a>
+              <Link to="/methodology">Methodology</Link>
               <Link to="/datasets">Datasets</Link>
               <Link to="/reports">Reports</Link>
+              <a href="https://github.com/RuchitAgrawal/Secure-Gen" target="_blank" rel="noopener noreferrer">GitHub</a>
             </div>
             <span className={styles.footerMeta}>MIT License</span>
           </div>

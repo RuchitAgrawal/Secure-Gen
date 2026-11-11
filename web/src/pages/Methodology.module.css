@@ -1,0 +1,217 @@
+.root {
+  min-height: 100vh;
+  background-color: var(--color-canvas);
+}
+
+.pageHeader {
+  padding: var(--spacing-xxl) 0 var(--spacing-xl);
+  border-bottom: 1px solid var(--color-hairline);
+  background-color: var(--color-canvas);
+}
+
+.badge {
+  margin-bottom: var(--spacing-sm);
+  display: inline-block;
+}
+
+.title {
+  font-size: 44px;
+  font-weight: 400;
+  letter-spacing: -0.8px;
+  color: var(--color-ink);
+  margin-bottom: var(--spacing-xs);
+}
+
+.subtitle {
+  font-size: 16px;
+  color: var(--color-muted);
+  max-width: 680px;
+  line-height: 1.5;
+}
+
+.body {
+  padding: var(--spacing-xl) 0 var(--spacing-section);
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}
+
+.card {
+  background-color: var(--color-surface-card);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--rounded-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-subtle);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--color-hairline-soft);
+  padding-bottom: var(--spacing-sm);
+}
+
+.sectionNumber {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary);
+  background-color: rgba(204, 120, 92, 0.12);
+  padding: 2px 8px;
+  border-radius: var(--rounded-xs);
+}
+
+.cardTitle {
+  font-family: var(--font-body);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.paragraph {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--color-body);
+  margin-bottom: var(--spacing-md);
+}
+
+.calloutBox {
+  background-color: var(--color-canvas);
+  border: 1px solid var(--color-hairline-soft);
+  border-left: 3px solid var(--color-primary);
+  border-radius: var(--rounded-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+.boxTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: var(--spacing-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stepList {
+  margin-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  font-size: 14px;
+  color: var(--color-body);
+  line-height: 1.55;
+}
+
+.tableWrap {
+  overflow-x: auto;
+  margin: var(--spacing-md) 0;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  background-color: var(--color-canvas);
+  border-radius: var(--rounded-md);
+  overflow: hidden;
+}
+
+.table th,
+.table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-hairline-soft);
+}
+
+.table th {
+  background-color: var(--color-surface-soft);
+  font-weight: 600;
+  color: var(--color-ink);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.table code {
+  font-family: var(--font-mono);
+  background-color: var(--color-surface-soft);
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: 12.5px;
+  color: var(--color-ink);
+}
+
+.rubricGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+}
+
+.rubricCard {
+  background-color: var(--color-canvas);
+  border: 1px solid var(--color-hairline-soft);
+  border-radius: var(--rounded-md);
+  padding: var(--spacing-md);
+}
+
+.rubricTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: 6px;
+}
+
+.formula {
+  background-color: var(--color-surface-soft);
+  padding: 6px 10px;
+  border-radius: var(--rounded-xs);
+  margin-bottom: var(--spacing-sm);
+}
+
+.formula code {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--color-primary);
+}
+
+.bulletList {
+  margin-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--color-muted);
+  line-height: 1.5;
+}
+
+.codeSnippet {
+  background-color: var(--color-surface-dark);
+  border-radius: var(--rounded-md);
+  padding: var(--spacing-md);
+  overflow-x: auto;
+  margin-bottom: var(--spacing-md);
+}
+
+.codeSnippet pre {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--color-on-dark);
+}
+
+@media (max-width: 768px) {
+  .rubricGrid {
+    grid-template-columns: 1fr;
+  }
+  .title {
+    font-size: 32px;
+  }
+}
