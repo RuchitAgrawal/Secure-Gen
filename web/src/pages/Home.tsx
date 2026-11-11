@@ -183,15 +183,16 @@ export default function Home() {
                   <line x1="13.66" y1="2.34" x2="2.34" y2="13.66" stroke="currentColor" strokeWidth="1.5"/>
                 </svg>
               </span>
-              Secure Gen
+              <span>Secure Gen &mdash; Built by Ruchit Agrawal</span>
             </div>
             <div className={styles.footerLinks}>
               <Link to="/methodology">Methodology</Link>
+              <Link to="/leaderboard">Leaderboard</Link>
               <Link to="/datasets">Datasets</Link>
               <Link to="/reports">Reports</Link>
               <a href="https://github.com/RuchitAgrawal/Secure-Gen" target="_blank" rel="noopener noreferrer">GitHub</a>
             </div>
-            <span className={styles.footerMeta}>MIT License</span>
+            <span className={styles.footerMeta}>MIT License &middot; Python 3.10+ &middot; React 18</span>
           </div>
         </div>
       </footer>
